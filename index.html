@@ -5,75 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SEN LOTUS HARMONY SPA & RETREAT</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { display: flex; height: 100vh; background-color: #f4f6f9; color: #333; }
-        
-        .sidebar { width: 100px; background: #2c3e50; color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 20px; gap: 10px; }
-        .nav-btn { background: none; border: none; color: #a0aec0; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; padding: 10px 0; }
-        .nav-btn.active, .nav-btn:hover { color: #fff; background: #34495e; border-left: 4px solid #27ae60; }
-        .nav-btn span { font-size: 20px; }
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --bg-main: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --text-main: #0f172a;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --accent-orange: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+        }
 
-        .tab-content { flex: 1; display: none; height: 100vh; overflow-y: auto; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; }
+        
+        /* SIDEBAR Responsive */
+        .sidebar { width: 80px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 8px; flex-shrink: 0; z-index: 100; }
+        .nav-btn { background: none; border: none; color: #94a3b8; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; padding: 12px 0; transition: all 0.2s; }
+        .nav-btn.active, .nav-btn:hover { color: #fff; background: #334155; border-left: 4px solid var(--primary); }
+        .nav-btn span { font-size: 22px; }
+
+        .tab-content { flex: 1; display: none; height: 100vh; overflow-y: auto; width: 100%; }
         .tab-content.active { display: flex; }
 
-        .main-panel { flex: 6; display: flex; flex-direction: column; padding: 15px; border-right: 1px solid #e0e0e0; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .header h1 { color: #2c3e50; font-size: 16px; }
+        /* TAB POS */
+        .pos-container { display: flex; width: 100%; height: 100%; }
+        .main-panel { flex: 6; display: flex; flex-direction: column; padding: 15px; border-right: 1px solid var(--border-color); overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #fff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .header h1 { color: var(--text-main); font-size: 16px; font-weight: 700; }
 
-        .categories { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .cat-btn { padding: 6px 12px; border: none; background: #fff; border-radius: 6px; cursor: pointer; font-weight: 600; border: 1px solid #ddd; white-space: nowrap; font-size: 11px; }
-        .cat-btn.active, .cat-btn:hover { background: #27ae60; color: #fff; border-color: #27ae60; }
+        .categories { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+        .cat-btn { padding: 8px 14px; border: 1px solid var(--border-color); background: #fff; border-radius: 20px; cursor: pointer; font-weight: 600; white-space: nowrap; font-size: 12px; color: #475569; transition: all 0.2s; }
+        .cat-btn.active, .cat-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 2px 4px rgba(16,185,129,0.2); }
 
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; overflow-y: auto; flex: 1; }
-        .service-card { background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
-        .service-card:hover { border-color: #27ae60; transform: translateY(-2px); }
-        .service-name { font-weight: bold; font-size: 12px; margin-bottom: 4px; }
-        .service-price { font-weight: bold; color: #27ae60; font-size: 12px; display: flex; justify-content: space-between; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .service-card { background: var(--card-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .service-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .service-name { font-weight: 600; font-size: 12px; margin-bottom: 6px; line-height: 1.3; }
+        .service-price { font-weight: 700; color: var(--primary); font-size: 13px; display: flex; justify-content: space-between; }
 
-        .cart-panel { flex: 4; background: #fff; display: flex; flex-direction: column; padding: 12px; box-shadow: -2px 0 10px rgba(0,0,0,0.03); overflow-y: auto; }
-        .cart-header { font-size: 14px; font-weight: bold; margin-bottom: 8px; border-bottom: 2px solid #edf2f7; padding-bottom: 4px; }
+        /* HÀNG CHỜ POS */
+        .pending-section { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-top: 10px; }
+        .pending-title { font-size: 13px; font-weight: 700; color: var(--accent-orange); margin-bottom: 8px; display: flex; justify-content: space-between; }
+
+        /* CART PANEL */
+        .cart-panel { flex: 4; background: #fff; display: flex; flex-direction: column; padding: 15px; box-shadow: -2px 0 10px rgba(0,0,0,0.03); overflow-y: auto; }
+        .cart-header { font-size: 15px; font-weight: 700; margin-bottom: 10px; border-bottom: 2px solid var(--bg-main); padding-bottom: 6px; color: var(--text-main); }
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #f7fafc; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
-        .form-grid input, .form-grid select { padding: 5px; font-size: 11px; border: 1px solid #cbd5e0; border-radius: 4px; width: 100%; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--bg-main); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .form-grid input, .form-grid select { padding: 7px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; outline: none; background: #fff; }
 
-        .cart-items { flex: 1; overflow-y: auto; margin-bottom: 8px; min-height: 120px; }
-        .cart-item { background: #fdfdfd; border: 1px solid #e8e8e8; border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; }
-        .cart-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .input-inline { padding: 3px 5px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; }
+        .cart-items { flex: 1; overflow-y: auto; margin-bottom: 10px; min-height: 120px; max-height: 250px; }
+        .cart-item { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 4px; }
+        .input-inline { padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 11px; background: #fff; }
         
-        .payment-options { display: flex; gap: 4px; margin-bottom: 8px; }
-        .payment-btn { flex: 1; padding: 6px 2px; border: 1px solid #cbd5e0; background: #f7fafc; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
-        .payment-btn.active { background: #3182ce; color: #fff; border-color: #3182ce; }
+        .payment-options { display: flex; gap: 6px; margin-bottom: 10px; }
+        .payment-btn { flex: 1; padding: 8px 4px; border: 1px solid var(--border-color); background: var(--bg-main); border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; text-align: center; }
+        .payment-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
 
-        .cart-summary { background: #f7fafc; padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 11px; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
-        .summary-row.total { font-size: 14px; font-weight: bold; color: #e53e3e; border-top: 1px solid #cbd5e0; padding-top: 4px; }
+        .cart-summary { background: var(--bg-main); padding: 10px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; border: 1px solid var(--border-color); }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .summary-row.total { font-size: 15px; font-weight: 700; color: var(--accent-red); border-top: 1px solid var(--border-color); padding-top: 6px; margin-top: 4px; }
 
-        .action-btns { display: flex; gap: 6px; }
-        .pay-btn { background: #27ae60; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; flex: 1; }
-        .hold-btn { background: #dd6b20; color: white; border: none; padding: 10px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; flex: 1; }
+        .action-btns { display: flex; gap: 8px; }
+        .pay-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
+        .hold-btn { background: var(--accent-orange); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
 
-        /* Report & Status Styles */
-        .panel-container { flex: 1; padding: 15px; background: #fff; overflow-y: auto; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-bottom: 15px; }
-        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; }
-        .stat-card h3 { font-size: 11px; color: #718096; margin-bottom: 4px; }
-        .stat-card .val { font-size: 16px; font-weight: bold; color: #2d3748; }
+        /* COMMON PANEL STYLES */
+        .panel-container { flex: 1; padding: 20px; background: #fff; overflow-y: auto; width: 100%; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
+        .stat-card { background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; }
+        .stat-card h3 { font-size: 11px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
+        .stat-card .val { font-size: 17px; font-weight: 700; color: var(--text-main); }
 
-        .filter-bar { background: #f7fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center; margin-bottom: 15px; flex-wrap: wrap; font-size: 12px; }
-        .filter-bar select, .filter-bar input { padding: 4px 8px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 11px; }
+        .filter-bar { background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; font-size: 12px; }
+        .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; background: #fff; }
 
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        .badge-pending { background: #feebc8; color: #c05621; }
-        .badge-completed { background: #c6f6d5; color: #22543d; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-completed { background: #d1fae5; color: #059669; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
-        th, td { border: 1px solid #e2e8f0; padding: 6px; text-align: left; }
-        th { background: #f7fafc; font-weight: 600; }
+        .table-responsive { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; min-width: 600px; }
+        th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
+        th { background: var(--bg-main); font-weight: 600; color: #475569; }
 
-        .btn-excel { background: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        .btn-danger { background: #e53e3e; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 10px; }
-        .btn-success { background: #27ae60; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 10px; }
+        .btn-excel { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; }
+        .btn-danger { background: var(--accent-red); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
+        .btn-success { background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
+        .btn-warning { background: var(--accent-orange); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
+
+        /* RESPONSIVE DÀNH CHO ĐIỆN THOẠI (< 768px) */
+        @media (max-width: 768px) {
+            body { flex-direction: column-reverse; }
+            .sidebar { width: 100%; height: 55px; flex-direction: row; justify-content: space-around; padding-top: 0; border-top: 1px solid var(--border-color); }
+            .nav-btn { padding: 6px 0; border-left: none !important; border-top: 3px solid transparent; }
+            .nav-btn.active { border-top-color: var(--primary); }
+            .tab-content { height: calc(100vh - 55px); }
+            .pos-container { flex-direction: column; overflow-y: auto; }
+            .main-panel, .cart-panel { flex: none; width: 100%; border-right: none; }
+            .cart-panel { box-shadow: none; border-top: 4px solid var(--bg-main); }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
 
         @media print {
             body * { visibility: hidden; }
@@ -84,6 +120,7 @@
 </head>
 <body>
 
+    <!-- NAV SIDEBAR BAR -->
     <div class="sidebar">
         <button class="nav-btn active" onclick="switchTab('pos-tab', this)"><span>🛒</span> Bán hàng</button>
         <button class="nav-btn" onclick="switchTab('report-tab', this)"><span>📊</span> Báo cáo</button>
@@ -92,74 +129,100 @@
     </div>
 
     <!-- TAB 1: BÁN HÀNG POS -->
-    <div id="pos-tab" class="tab-content active" style="width: 100%;">
-        <div class="main-panel">
-            <div class="header">
-                <h1 id="web-title">🪷 SEN LOTUS HARMONY SPA</h1>
-                <div style="font-size: 12px;">Tỷ giá USD: <input type="number" id="usd-rate" value="25000" style="width: 60px;" onchange="renderCart()"></div>
-            </div>
-            <div class="categories" id="categories-container"></div>
-            <div class="services-grid" id="services-container"></div>
-        </div>
-
-        <div class="cart-panel">
-            <div class="cart-header">HÓA ĐƠN BÁN HÀNG</div>
-            
-            <div class="form-grid">
-                <input type="text" id="cust-name" placeholder="Tên khách hàng">
-                <input type="text" id="cust-nation" placeholder="Quốc tịch">
-                <input type="text" id="cust-hdv" placeholder="Tên Hướng dẫn viên (HDV)">
-                <select id="cust-room">
-                    <option value="Phòng 101 (Tầng 1)">Phòng 101 (Tầng 1)</option>
-                    <option value="Phòng 102 (Tầng 1)">Phòng 102 (Tầng 1)</option>
-                    <option value="Phòng 201 (Tầng 2)">Phòng 201 (Tầng 2)</option>
-                    <option value="Phòng 202 (Tầng 2)">Phòng 202 (Tầng 2)</option>
-                    <option value="Phòng VIP (Tầng 3)">Phòng VIP (Tầng 3)</option>
-                </select>
-            </div>
-
-            <div class="cart-items" id="cart-items-container">
-                <p style="color: #a0aec0; text-align: center; margin-top: 20px;">Chưa chọn dịch vụ nào</p>
-            </div>
-
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 10px;">Giảm giá (VND):</label>
-                    <input type="number" id="cart-discount" value="0" onchange="renderCart()">
+    <div id="pos-tab" class="tab-content active">
+        <div class="pos-container">
+            <div class="main-panel">
+                <div class="header">
+                    <h1 id="web-title">🪷 SEN LOTUS HARMONY SPA</h1>
+                    <div style="font-size: 12px;">Tỷ giá USD: <input type="number" id="usd-rate" value="25000" style="width: 65px; padding: 2px 4px;" onchange="renderCart()"></div>
                 </div>
-                <div>
-                    <label style="font-size: 10px;">Ghi chú hóa đơn:</label>
-                    <input type="text" id="cart-note" placeholder="Ghi chú...">
+                
+                <div class="categories" id="categories-container"></div>
+                <div class="services-grid" id="services-container"></div>
+
+                <!-- KHU VỰC HÀNG CHỜ THANH TOÁN (NGAY MÀN BÁN HÀNG) -->
+                <div class="pending-section">
+                    <div class="pending-title">
+                        <span>⏳ ĐƠN HÀNG ĐANG CHỜ THANH TOÁN</span>
+                        <small id="pending-count" style="color: #64748b;">(0 đơn)</small>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mã HD</th>
+                                    <th>Khách hàng</th>
+                                    <th>Phòng</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pos-pending-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div class="payment-options">
-                <button class="payment-btn active" id="pay-cash" onclick="setPaymentMethod('Tiền mặt')">💵 Tiền mặt</button>
-                <button class="payment-btn" id="pay-qr" onclick="setPaymentMethod('QR Code')">📱 QR</button>
-                <button class="payment-btn" id="pay-bank" onclick="setPaymentMethod('Chuyển khoản')">🏦 C.Khoản</button>
-                <button class="payment-btn" id="pay-card" onclick="setPaymentMethod('Cà thẻ')">💳 Cà thẻ</button>
-            </div>
+            <!-- FORM BÁN HÀNG / HOÁ ĐƠN -->
+            <div class="cart-panel">
+                <div class="cart-header" id="cart-mode-title">HÓA ĐƠN BÁN HÀNG TẠO MỚI</div>
+                
+                <div class="form-grid">
+                    <input type="text" id="cust-name" placeholder="Tên khách hàng">
+                    <input type="text" id="cust-nation" placeholder="Quốc tịch">
+                    <input type="text" id="cust-hdv" placeholder="Tên HDV (Nếu có)">
+                    <select id="cust-room">
+                        <option value="Phòng 101 (Tầng 1)">Phòng 101 (Tầng 1)</option>
+                        <option value="Phòng 102 (Tầng 1)">Phòng 102 (Tầng 1)</option>
+                        <option value="Phòng 201 (Tầng 2)">Phòng 201 (Tầng 2)</option>
+                        <option value="Phòng 202 (Tầng 2)">Phòng 202 (Tầng 2)</option>
+                        <option value="Phòng VIP (Tầng 3)">Phòng VIP (Tầng 3)</option>
+                    </select>
+                </div>
 
-            <div class="cart-summary">
-                <div class="summary-row"><span>Tạm tính:</span><span id="sub-total">0 đ</span></div>
-                <div class="summary-row"><span>Giảm giá:</span><span id="discount-val">0 đ</span></div>
-                <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
-                <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2b6cb0; font-weight:bold;">$0</span></div>
-            </div>
+                <div class="cart-items" id="cart-items-container">
+                    <p style="color: #94a3b8; text-align: center; margin-top: 30px; font-size: 12px;">Chưa chọn dịch vụ nào</p>
+                </div>
 
-            <div class="action-btns">
-                <button class="hold-btn" onclick="saveTransaction('Chờ thanh toán')">⏳ LƯU HÀNG CHỜ</button>
-                <button class="pay-btn" onclick="saveTransaction('Hoàn thành')">✅ THANH TOÁN & IN</button>
+                <div class="form-grid">
+                    <div>
+                        <label style="font-size: 10px; font-weight:600;">Giảm giá (VND):</label>
+                        <input type="number" id="cart-discount" value="0" onchange="renderCart()">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; font-weight:600;">Ghi chú hóa đơn:</label>
+                        <input type="text" id="cart-note" placeholder="Ghi chú...">
+                    </div>
+                </div>
+
+                <div class="payment-options">
+                    <button class="payment-btn active" id="pay-cash" onclick="setPaymentMethod('Tiền mặt')">💵 Tiền mặt</button>
+                    <button class="payment-btn" id="pay-qr" onclick="setPaymentMethod('QR Code')">📱 QR</button>
+                    <button class="payment-btn" id="pay-bank" onclick="setPaymentMethod('Chuyển khoản')">🏦 C.Khoản</button>
+                    <button class="payment-btn" id="pay-card" onclick="setPaymentMethod('Cà thẻ')">💳 Cà thẻ</button>
+                </div>
+
+                <div class="cart-summary">
+                    <div class="summary-row"><span>Tạm tính:</span><span id="sub-total">0 đ</span></div>
+                    <div class="summary-row"><span>Giảm giá:</span><span id="discount-val">0 đ</span></div>
+                    <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
+                    <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2563eb; font-weight:bold;">$0</span></div>
+                </div>
+
+                <div class="action-btns">
+                    <button class="hold-btn" onclick="saveTransaction('Chờ thanh toán')">⏳ LƯU HÀNG CHỜ</button>
+                    <button class="pay-btn" onclick="saveTransaction('Hoàn thành')">✅ THANH TOÁN & IN</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- TAB 2: HỆ THỐNG 8 NHÓM BÁO CÁO -->
+    <!-- TAB 2: BÁO CÁO DOANH THU -->
     <div id="report-tab" class="tab-content">
         <div class="panel-container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h2>📊 Báo Cáo Doanh Thu & Quản Lý Tổng Hợp</h2>
-                <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất Báo Cáo Excel (.CSV)</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+                <h2>📊 Báo Cáo Doanh Thu Tổng Hợp</h2>
+                <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất File CSV / Excel</button>
             </div>
 
             <div class="filter-bar">
@@ -168,150 +231,171 @@
                     <option value="day">Theo Ngày</option>
                     <option value="month">Theo Tháng</option>
                     <option value="year">Theo Năm</option>
-                    <option value="all">Tất Cả Lịch Sử</option>
+                    <option value="all">Tất Cả</option>
                 </select>
                 <div id="group-filter-date"><input type="date" id="filter-date" onchange="updateReportUI()"></div>
                 <div id="group-filter-month" style="display:none;"><input type="month" id="filter-month" onchange="updateReportUI()"></div>
                 <div id="group-filter-year" style="display:none;"><select id="filter-year" onchange="updateReportUI()"></select></div>
 
-                <label style="margin-left:15px;">Trạng thái:</label>
+                <label style="margin-left:10px;">Trạng thái:</label>
                 <select id="filter-status" onchange="updateReportUI()">
-                    <option value="all">Tất cả trạng thái</option>
+                    <option value="all">Tất cả</option>
                     <option value="Hoàn thành">Đã hoàn thành</option>
                     <option value="Chờ thanh toán">Chờ thanh toán</option>
                 </select>
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><h3>1. Doanh Thu Đã Thu</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
-                <div class="stat-card"><h3>2. Lợi Nhuận Thuần</h3><div class="val" id="rep-7-profit" style="color:#27ae60;">0 đ</div></div>
-                <div class="stat-card"><h3>3. Tổng Giảm Giá</h3><div class="val" id="rep-3-discount" style="color:#e53e3e;">0 đ</div></div>
-                <div class="stat-card"><h3>4. Hoa Hồng HDV (30%)</h3><div class="val" id="rep-4-hdv" style="color:#dd6b20;">0 đ</div></div>
-                <div class="stat-card"><h3>5. Tiền Vé KTV Ngoài</h3><div class="val" id="rep-5-ktv" style="color:#805ad5;">0 đ</div></div>
-                <div class="stat-card"><h3>6. Chi Tiêu Kho/Quán</h3><div class="val" id="rep-6-expense" style="color:#e53e3e;">0 đ</div></div>
+                <div class="stat-card"><h3>1. Doanh Thu Thu Vào</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
+                <div class="stat-card"><h3>2. Lợi Nhuận Thuần</h3><div class="val" id="rep-7-profit" style="color:var(--primary-dark);">0 đ</div></div>
+                <div class="stat-card"><h3>3. Tổng Giảm Giá</h3><div class="val" id="rep-3-discount" style="color:var(--accent-red);">0 đ</div></div>
+                <div class="stat-card"><h3>4. Hoa Hồng HDV (30%)</h3><div class="val" id="rep-4-hdv" style="color:var(--accent-orange);">0 đ</div></div>
+                <div class="stat-card"><h3>5. Tiền Vé KTV Ngoài</h3><div class="val" id="rep-5-ktv" style="color:#7c3aed;">0 đ</div></div>
+                <div class="stat-card"><h3>6. Chi Phí Vật Tư Kho</h3><div class="val" id="rep-6-expense" style="color:var(--accent-red);">0 đ</div></div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                    <h4 style="font-size:12px; margin-bottom:5px;">💳 2. Hình Thức Thanh Toán (Chỉ tính đơn Hoàn Thành)</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                <div style="background:var(--bg-main); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                    <h4 style="font-size:12px; margin-bottom:5px;">💳 Hình Thức Thanh Toán (Thực Thu)</h4>
                     <div id="rep-2-payment-details" style="font-size:11px;"></div>
                 </div>
-                <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                    <h4 style="font-size:12px; margin-bottom:5px;">📈 8. Thống Kê Dịch Vụ & Phòng</h4>
+                <div style="background:var(--bg-main); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                    <h4 style="font-size:12px; margin-bottom:5px;">📈 Thống Kê Nổi Bật</h4>
                     <div id="rep-8-stats-details" style="font-size:11px;"></div>
                 </div>
             </div>
 
-            <h3>📋 Chi Tiết Danh Sách Hóa Đơn</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mã HD</th>
-                        <th>Thời Gian</th>
-                        <th>Trạng Thái</th>
-                        <th>Khách / QT</th>
-                        <th>HDV</th>
-                        <th>Phòng</th>
-                        <th>Dịch Vụ & KTV</th>
-                        <th>Vé KTV Ngoài</th>
-                        <th>Giảm Giá</th>
-                        <th>Thành Tiền</th>
-                        <th>Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody id="history-table-body"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- TAB 3: BÁO CÁO CHI PHÍ KHO -->
-    <div id="expense-tab" class="tab-content">
-        <div class="panel-container" style="display: flex; gap: 15px;">
-            <div style="flex: 1; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <h3>📥 Nhập Chi Phí / Mua Vật Tư Kho</h3>
-                <br>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Loại Chi Phí:</label>
-                    <select id="exp-category" style="width:100%; padding:5px; font-size:11px; border-radius:4px; border:1px solid #ccc;">
-                        <option value="Mua dầu">Mua dầu</option>
-                        <option value="Mua khăn">Mua khăn</option>
-                        <option value="Điện nước">Điện nước</option>
-                        <option value="Văn phòng phẩm">Văn phòng phẩm</option>
-                        <option value="Khác">Khác</option>
-                    </select>
-                </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Tên Đồ Dùng / Vật Tư:</label>
-                    <input type="text" id="exp-name" placeholder="VD: Mua 5L Tinh dầu sả chanh" style="width:100%; padding:5px; font-size:11px;">
-                </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Số Tiền Chi (VND):</label>
-                    <input type="number" id="exp-amount" placeholder="0" style="width:100%; padding:5px; font-size:11px;">
-                </div>
-                <button class="pay-btn" style="background: #e53e3e;" onclick="addExpense()">GHI SỔ CHI PHÍ KHO</button>
-            </div>
-
-            <div style="flex: 2;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3>📦 Báo Cáo Chi Tiết Chi Phí Kho & Vật Tư</h3>
-                    <button class="btn-danger" onclick="clearAllExpenses()">🗑️ Xóa Lịch Sử Chi Phí</button>
-                </div>
+            <h3>📋 Danh Sách Tất Cả Hóa Đơn</h3>
+            <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
+                            <th>Mã HD</th>
                             <th>Thời Gian</th>
-                            <th>Phân Loại</th>
-                            <th>Nội Dung Chi</th>
-                            <th>Số Tiền Chi</th>
+                            <th>Trạng Thái</th>
+                            <th>Khách / QT</th>
+                            <th>HDV</th>
+                            <th>Phòng</th>
+                            <th>Dịch Vụ</th>
+                            <th>Thành Tiền</th>
+                            <th>Thao Tác</th>
                         </tr>
                     </thead>
-                    <tbody id="expense-table-body"></tbody>
+                    <tbody id="history-table-body"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- TAB 4: CÀI ĐẶT ĐẦY ĐỦ TÍNH NĂNG -->
+    <!-- TAB 3: BÁO CÁO CHI PHÍ KHO -->
+    <div id="expense-tab" class="tab-content">
+        <div class="panel-container">
+            <h2>📦 Quan Lý & Báo Cáo Chi Phí Kho / Vật Tư</h2>
+            <br>
+            <!-- LỌC BÁO CÁO KHO -->
+            <div class="filter-bar">
+                <label>Xem chi phí kho theo:</label>
+                <select id="exp-report-mode" onchange="toggleExpFilterInputs()">
+                    <option value="day">Theo Ngày</option>
+                    <option value="month">Theo Tháng</option>
+                    <option value="year">Theo Năm</option>
+                    <option value="all">Tất Cả Lịch Sử</option>
+                </select>
+                <div id="exp-group-filter-date"><input type="date" id="exp-filter-date" onchange="updateExpenseUI()"></div>
+                <div id="exp-group-filter-month" style="display:none;"><input type="month" id="exp-filter-month" onchange="updateExpenseUI()"></div>
+                <div id="exp-group-filter-year" style="display:none;"><select id="exp-filter-year" onchange="updateExpenseUI()"></select></div>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns: 1fr;">
+                <div class="stat-card" style="background:#fef2f2; border-color:#fecaca;">
+                    <h3 style="color:#dc2626;">TỔNG CHI PHÍ KHO TRONG KỲ LỌC</h3>
+                    <div class="val" id="exp-total-val" style="color:#dc2626; font-size:22px;">0 đ</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 260px; background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <h3 style="font-size:13px;">📥 Nhập Chi Phí / Mua Vật Tư Kho</h3>
+                    <br>
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:11px; font-weight:600;">Loại Chi Phí:</label>
+                        <select id="exp-category" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                            <option value="Mua dầu">Mua dầu</option>
+                            <option value="Mua khăn">Mua khăn</option>
+                            <option value="Điện nước">Điện nước</option>
+                            <option value="Văn phòng phẩm">Văn phòng phẩm</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:11px; font-weight:600;">Tên Đồ Dùng / Vật Tư:</label>
+                        <input type="text" id="exp-name" placeholder="VD: Mua 5L Tinh dầu" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label style="font-size:11px; font-weight:600;">Số Tiền Chi (VND):</label>
+                        <input type="number" id="exp-amount" placeholder="0" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                    </div>
+                    <button class="pay-btn" style="background: var(--accent-red); width:100%;" onclick="addExpense()">GHI SỔ CHI PHÍ KHO</button>
+                </div>
+
+                <div style="flex: 2; min-width: 300px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="font-size:13px;">📋 Lịch Sử Chi Phí Kho</h3>
+                        <button class="btn-danger" onclick="clearAllExpenses()">🗑️ Xóa Lịch Sử Kho</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Thời Gian</th>
+                                    <th>Phân Loại</th>
+                                    <th>Nội Dung Chi</th>
+                                    <th>Số Tiền Chi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: CÀI ĐẶT DỊCH VỤ VÀ CỬA HÀNG -->
     <div id="settings-tab" class="tab-content">
-        <div class="panel-container" style="max-width: 650px;">
+        <div class="panel-container" style="max-width: 700px;">
             <h2>⚙️ Cài Đặt Hệ Thống & Cửa Hàng</h2>
             <br>
-            <h3 style="color:#27ae60; font-size:13px; margin-bottom:10px;">1. Thông tin Spa (In trên Hóa đơn)</h3>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Tên Thương Hiệu Spa:</label>
-                <input type="text" id="cfg-spa-name" style="width:100%; padding:6px; font-size:11px;">
+            <!-- 1. QUẢN LÝ DANH MỤC BÁN HÀNG -->
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">1. Đổi Tên / Quản Lý Danh Mục Bán Hàng</h3>
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <input type="text" id="new-cat-name" placeholder="Tên danh mục mới..." style="flex:1; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
+                <button class="btn-success" onclick="addNewCategory()">Thêm Danh Mục</button>
             </div>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Địa Chỉ Quán:</label>
-                <input type="text" id="cfg-spa-address" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Số Điện Thoại Hotline:</label>
-                <input type="text" id="cfg-spa-phone" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="font-size:11px; font-weight:bold;">Tỷ giá USD mặc định (VND):</label>
-                <input type="number" id="cfg-default-usd" style="width:100%; padding:6px; font-size:11px;">
-            </div>
+            <div id="category-edit-list" style="margin-bottom:15px; background:var(--bg-main); padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
 
             <hr><br>
-            <h3 style="color:#3182ce; font-size:13px; margin-bottom:10px;">2. Cấu hình VietQR Chuyển Khoản</h3>
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">2. Thông tin Spa (In trên Hóa đơn)</h3>
             <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Mã Ngân Hàng (VD: MB, VCB, TCB):</label>
-                <input type="text" id="cfg-bank-id" style="width:100%; padding:6px; font-size:11px;">
+                <label style="font-size:11px; font-weight:600;">Tên Thương Hiệu Spa:</label>
+                <input type="text" id="cfg-spa-name" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
             </div>
             <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Số Tài Khoản Ngân Hàng:</label>
-                <input type="text" id="cfg-bank-no" style="width:100%; padding:6px; font-size:11px;">
+                <label style="font-size:11px; font-weight:600;">Địa Chỉ Quán:</label>
+                <input type="text" id="cfg-spa-address" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+            </div>
+            <div style="margin-bottom:8px;">
+                <label style="font-size:11px; font-weight:600;">Số Điện Thoại Hotline:</label>
+                <input type="text" id="cfg-spa-phone" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
             </div>
             <div style="margin-bottom:15px;">
-                <label style="font-size:11px; font-weight:bold;">Tên Chủ Tài Khoản:</label>
-                <input type="text" id="cfg-bank-name" style="width:100%; padding:6px; font-size:11px;">
+                <label style="font-size:11px; font-weight:600;">Tỷ giá USD mặc định (VND):</label>
+                <input type="number" id="cfg-default-usd" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
             </div>
 
-            <button class="pay-btn" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
+            <button class="pay-btn" style="width:100%;" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
             <br><br><hr><br>
-            <h3 style="color:#e53e3e; font-size:13px; margin-bottom:5px;">3. Quản lý Dữ liệu Lịch sử</h3>
+            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:5px;">3. Quản lý Dữ liệu Lịch sử</h3>
             <button class="btn-danger" style="width:100%; padding:10px; font-size:11px;" onclick="clearAllTransactions()">🗑️ XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA</button>
         </div>
     </div>
@@ -319,55 +403,34 @@
     <div id="print-area" style="display: none;"></div>
 
     <script>
-        let SPA_CONFIG = JSON.parse(localStorage.getItem('spa_config_v3') || JSON.stringify({
+        // CONFIG VÀ DANH MỤC BAN ĐẦU
+        let SPA_CONFIG = JSON.parse(localStorage.getItem('spa_config_v4') || JSON.stringify({
             NAME: "SEN LOTUS HARMONY SPA & RETREAT",
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
             USD_RATE: 25000,
-            BANK_ID: "MB",
-            BANK_NO: "0856112789",
-            BANK_NAME: "LOTUS HARMONY SPA"
+            CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"]
         }));
 
-        // MENU DỊCH VỤ HOÀN CHỈNH TẤT CẢ DANH MỤC
         const menuData = [
-            // Tắm & Xông Hơi
             { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
             { category: "Tắm & Xông Hơi", name: "Sauna (Xông hơi khoang)", duration: 30, vnd: 150000, usd: 6 },
             { category: "Tắm & Xông Hơi", name: "Himalayan Salt Sauna (Xông hơi đá muối)", duration: 30, vnd: 200000, usd: 8 },
-
-            // Massage Đầu/Cổ/Vai/Chân
             { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 45, vnd: 200000, usd: 8 },
             { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 60, vnd: 250000, usd: 10 },
-            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 90, vnd: 400000, usd: 16 },
-
-            // Body Massage
-            { category: "Body Massage", name: "Body Massage + Tinh dầu Aroma", duration: 45, vnd: 250000, usd: 10 },
             { category: "Body Massage", name: "Body Massage + Tinh dầu Aroma", duration: 60, vnd: 300000, usd: 12 },
-            { category: "Body Massage", name: "Body Massage + Tinh dầu Aroma", duration: 90, vnd: 420000, usd: 17 },
             { category: "Body Massage", name: "Body Massage + Đá nóng (Hot Stone)", duration: 60, vnd: 400000, usd: 16 },
-            { category: "Body Massage", name: "Body Massage + Thảo dược Herbal", duration: 60, vnd: 400000, usd: 16 },
-
-            // Combo Body
             { category: "Combo Body", name: "Combo Tắm lá + Xông hơi + Đá muối", duration: 60, vnd: 700000, usd: 28 },
-            { category: "Combo Body", name: "Combo Tắm lá + Xông hơi + Massage Body", duration: 90, vnd: 800000, usd: 32 },
-
-            // Nail Care
             { category: "Nail Care", name: "Manicure (Cắt nhặt móng tay)", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Nail Care", name: "Pedicure (Cắt nhặt móng chân)", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Nail Care", name: "Gel nail (Sơn Gel)", duration: 45, vnd: 300000, usd: 12 },
-
-            // Gội Đầu & Skincare
-            { category: "Gội Đầu & Skincare", name: "Gội đầu dưỡng sinh (Scalp Care)", duration: 45, vnd: 250000, usd: 10 },
-            { category: "Gội Đầu & Skincare", name: "Chăm sóc da mặt (Skincare)", duration: 60, vnd: 300000, usd: 12 }
+            { category: "Gội Đầu & Skincare", name: "Gội đầu dưỡng sinh (Scalp Care)", duration: 45, vnd: 250000, usd: 10 }
         ];
 
         let cart = [];
+        let editingTxId = null; // Biến kiểm tra hóa đơn đang chỉnh sửa
         let currentCategory = "Tất cả";
         let selectedPayment = "Tiền mặt";
-        let transactions = JSON.parse(localStorage.getItem('spa_transactions_v3') || '[]');
-        let expenses = JSON.parse(localStorage.getItem('spa_expenses_v3') || '[]');
+        let transactions = JSON.parse(localStorage.getItem('spa_transactions_v4') || '[]');
+        let expenses = JSON.parse(localStorage.getItem('spa_expenses_v4') || '[]');
         let filteredCache = [];
 
         function init() {
@@ -381,14 +444,21 @@
             
             document.getElementById("filter-date").value = `${yyyy}-${mm}-${dd}`;
             document.getElementById("filter-month").value = `${yyyy}-${mm}`;
+            document.getElementById("exp-filter-date").value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById("exp-filter-month").value = `${yyyy}-${mm}`;
 
             const yearSelect = document.getElementById("filter-year");
-            yearSelect.innerHTML = "";
-            for (let y = yyyy; y >= yyyy - 5; y--) yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            const expYearSelect = document.getElementById("exp-filter-year");
+            yearSelect.innerHTML = ""; expYearSelect.innerHTML = "";
+            for (let y = yyyy; y >= yyyy - 5; y--) {
+                yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+                expYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+            }
 
             loadSettingsToUI();
             renderCategories();
             renderServices();
+            renderPendingTransactionsPOS();
             updateReportUI();
             updateExpenseUI();
         }
@@ -400,10 +470,12 @@
             btn.classList.add('active');
             if (tabId === 'report-tab') updateReportUI();
             if (tabId === 'expense-tab') updateExpenseUI();
+            if (tabId === 'pos-tab') renderPendingTransactionsPOS();
         }
 
+        // QUẢN LÝ DANH MỤC
         function renderCategories() {
-            const categories = ["Tất cả", ...new Set(menuData.map(item => item.category))];
+            const categories = ["Tất cả", ...SPA_CONFIG.CATEGORIES];
             document.getElementById("categories-container").innerHTML = categories.map(cat => 
                 `<button class="cat-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`
             ).join('');
@@ -420,10 +492,10 @@
             document.getElementById("services-container").innerHTML = filtered.map((item, index) => `
                 <div class="service-card" onclick="addToCartByIndex(${index})">
                     <div class="service-name">${item.name}</div>
-                    <div style="font-size:10px; color:#718096;">⏱️ ${item.duration} phút</div>
+                    <div style="font-size:10px; color:#64748b;">⏱️ ${item.duration} phút</div>
                     <div class="service-price">
                         <span>${item.vnd.toLocaleString()} đ</span>
-                        <span style="color:#2b6cb0;">$${item.usd}</span>
+                        <span style="color:#2563eb;">$${item.usd}</span>
                     </div>
                 </div>
             `).join('');
@@ -467,7 +539,7 @@
         function renderCart() {
             const container = document.getElementById("cart-items-container");
             if (cart.length === 0) {
-                container.innerHTML = '<p style="color: #a0aec0; text-align: center; margin-top: 20px;">Chưa chọn dịch vụ nào</p>';
+                container.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 30px; font-size: 12px;">Chưa chọn dịch vụ nào</p>';
             } else {
                 container.innerHTML = cart.map(item => `
                     <div class="cart-item">
@@ -476,15 +548,15 @@
                             <button class="btn-danger" onclick="removeFromCart(${item.id})">×</button>
                         </div>
                         <div class="cart-item-row">
-                            <span>Giá: <input type="number" class="input-inline" style="width:70px" value="${item.vnd}" onchange="updateCartItem(${item.id}, 'vnd', this.value)"> đ</span>
+                            <span>Giá: <input type="number" class="input-inline" style="width:75px" value="${item.vnd}" onchange="updateCartItem(${item.id}, 'vnd', this.value)"> đ</span>
                             <select class="input-inline" onchange="updateCartItem(${item.id}, 'ktvType', this.value)">
                                 <option value="Nội bộ" ${item.ktvType==='Nội bộ'?'selected':''}>KTV Trong</option>
                                 <option value="KTV Ngoài" ${item.ktvType==='KTV Ngoài'?'selected':''}>KTV Ngoài</option>
                             </select>
                         </div>
                         <div class="cart-item-row" style="margin-top:3px;">
-                            <input type="text" placeholder="Tên KTV" class="input-inline" style="width:50%" value="${item.ktvName}" onchange="updateCartItem(${item.id}, 'ktvName', this.value)">
-                            ${item.ktvType === 'KTV Ngoài' ? `<input type="number" placeholder="Vé KTV ngoài" class="input-inline" style="width:45%" value="${item.ktvExtFee}" onchange="updateCartItem(${item.id}, 'ktvExtFee', this.value)">` : ''}
+                            <input type="text" placeholder="Tên KTV" class="input-inline" style="width:48%" value="${item.ktvName}" onchange="updateCartItem(${item.id}, 'ktvName', this.value)">
+                            ${item.ktvType === 'KTV Ngoài' ? `<input type="number" placeholder="Vé KTV ngoài" class="input-inline" style="width:48%" value="${item.ktvExtFee}" onchange="updateCartItem(${item.id}, 'ktvExtFee', this.value)">` : ''}
                         </div>
                     </div>
                 `).join('');
@@ -501,6 +573,7 @@
             document.getElementById("total-usd").innerText = '$' + (totalVnd / rate).toFixed(1);
         }
 
+        // LƯU/CẬP NHẬT GIAO DỊCH
         function saveTransaction(status) {
             if (cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
@@ -517,50 +590,123 @@
 
             const hdvName = document.getElementById("cust-hdv").value.trim();
 
-            const tx = {
-                id: 'HD' + Date.now().toString().slice(-6),
-                status: status, // "Chờ thanh toán" hoặc "Hoàn thành"
-                isoDate: `${yyyy}-${mm}-${dd}`,
-                createdTime: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
-                customer: document.getElementById("cust-name").value || "Khách lẻ",
-                nation: document.getElementById("cust-nation").value || "Việt Nam",
-                hdv: hdvName,
-                hdvCommission: hdvName ? (totalVnd * 0.3) : 0,
-                room: document.getElementById("cust-room").value,
-                items: [...cart],
-                discount: discount,
-                totalKtvExtFee: totalKtvExtFee,
-                paymentMethod: selectedPayment,
-                totalVnd: totalVnd,
-                totalUsd: (totalVnd / rate).toFixed(1),
-                note: document.getElementById("cart-note").value
-            };
+            let tx;
+            if (editingTxId) { // Đang chỉnh sửa bill có sẵn
+                tx = transactions.find(t => t.id === editingTxId);
+                tx.status = status;
+                tx.customer = document.getElementById("cust-name").value || "Khách lẻ";
+                tx.nation = document.getElementById("cust-nation").value || "Việt Nam";
+                tx.hdv = hdvName;
+                tx.hdvCommission = hdvName ? (totalVnd * 0.3) : 0;
+                tx.room = document.getElementById("cust-room").value;
+                tx.items = [...cart];
+                tx.discount = discount;
+                tx.totalKtvExtFee = totalKtvExtFee;
+                tx.paymentMethod = selectedPayment;
+                tx.totalVnd = totalVnd;
+                tx.totalUsd = (totalVnd / rate).toFixed(1);
+                tx.note = document.getElementById("cart-note").value;
+            } else { // Tạo bill mới hoàn toàn
+                tx = {
+                    id: 'HD' + Date.now().toString().slice(-6),
+                    status: status,
+                    isoDate: `${yyyy}-${mm}-${dd}`,
+                    createdTime: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
+                    customer: document.getElementById("cust-name").value || "Khách lẻ",
+                    nation: document.getElementById("cust-nation").value || "Việt Nam",
+                    hdv: hdvName,
+                    hdvCommission: hdvName ? (totalVnd * 0.3) : 0,
+                    room: document.getElementById("cust-room").value,
+                    items: [...cart],
+                    discount: discount,
+                    totalKtvExtFee: totalKtvExtFee,
+                    paymentMethod: selectedPayment,
+                    totalVnd: totalVnd,
+                    totalUsd: (totalVnd / rate).toFixed(1),
+                    note: document.getElementById("cart-note").value
+                };
+                transactions.unshift(tx);
+            }
 
-            transactions.unshift(tx);
-            localStorage.setItem('spa_transactions_v3', JSON.stringify(transactions));
+            localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
 
             if (status === 'Hoàn thành') {
                 printThermalBill(tx, subTotal);
             } else {
-                alert("Đã lưu đơn vào HÀNG CHỜ THANH TOÁN thành công!");
+                alert("Đã lưu hóa đơn vào HÀNG CHỜ!");
             }
 
-            // Reset Form
+            resetCartForm();
+            renderPendingTransactionsPOS();
+        }
+
+        function resetCartForm() {
             cart = [];
+            editingTxId = null;
+            document.getElementById("cart-mode-title").innerText = "HÓA ĐƠN BÁN HÀNG TẠO MỚI";
+            document.getElementById("cart-mode-title").style.color = "var(--text-main)";
             document.getElementById("cust-name").value = "";
             document.getElementById("cust-hdv").value = "";
+            document.getElementById("cust-nation").value = "";
             document.getElementById("cart-discount").value = 0;
             document.getElementById("cart-note").value = "";
             renderCart();
+        }
+
+        // TẢI ĐƠN HÀNG LÊN FORM ĐỂ CHỈNH SỬA
+        function editTransaction(txId) {
+            const tx = transactions.find(t => t.id === txId);
+            if (!tx) return;
+
+            editingTxId = tx.id;
+            document.getElementById("cart-mode-title").innerText = "✏️ ĐANG SỬA HÓA ĐƠN: " + tx.id;
+            document.getElementById("cart-mode-title").style.color = "var(--accent-orange)";
+
+            document.getElementById("cust-name").value = tx.customer;
+            document.getElementById("cust-nation").value = tx.nation;
+            document.getElementById("cust-hdv").value = tx.hdv || "";
+            document.getElementById("cust-room").value = tx.room;
+            document.getElementById("cart-discount").value = tx.discount || 0;
+            document.getElementById("cart-note").value = tx.note || "";
+            setPaymentMethod(tx.paymentMethod || 'Tiền mặt');
+
+            cart = [...tx.items];
+            renderCart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPendingTransactionsPOS() {
+            const pendingList = transactions.filter(t => t.status === 'Chờ thanh toán');
+            document.getElementById("pending-count").innerText = `(${pendingList.length} đơn)`;
+            
+            const tbody = document.getElementById("pos-pending-tbody");
+            if (pendingList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#94a3b8;">Không có đơn hàng nào chờ thanh toán</td></tr>';
+            } else {
+                tbody.innerHTML = pendingList.map(t => `
+                    <tr>
+                        <td><b>${t.id}</b></td>
+                        <td>${t.customer}</td>
+                        <td>${t.room}</td>
+                        <td style="font-weight:bold; color:var(--accent-red);">${t.totalVnd.toLocaleString()} đ</td>
+                        <td>
+                            <button class="btn-warning" onclick="editTransaction('${t.id}')">✏️ Sửa</button>
+                            <button class="btn-success" onclick="markAsPaid('${t.id}')">✅ Thanh toán</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
 
         function markAsPaid(txId) {
             const tx = transactions.find(t => t.id === txId);
             if (tx) {
                 tx.status = 'Hoàn thành';
-                localStorage.setItem('spa_transactions_v3', JSON.stringify(transactions));
+                localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
+                if (editingTxId === txId) resetCartForm();
+                renderPendingTransactionsPOS();
                 updateReportUI();
-                alert(`Đã hoàn tất thanh toán cho hóa đơn ${txId}!`);
+                alert(`Đã thanh toán thành công hóa đơn ${txId}!`);
             }
         }
 
@@ -576,16 +722,12 @@
                     <small>Mã HD: ${tx.id} - ${tx.createdTime}</small>
                 </div>
                 <br>
-                <div>
-                     Khách: ${tx.customer} (${tx.nation})<br>
-                     Phòng: ${tx.room}<br>
-                     ${tx.hdv ? ' HDV: ' + tx.hdv + '<br>' : ''}
-                </div>
+                <div>Khách: ${tx.customer} (${tx.nation})<br>Phòng: ${tx.room}<br>${tx.hdv ? ' HDV: ' + tx.hdv + '<br>' : ''}</div>
                 <p>--------------------------------</p>
                 ${tx.items.map(i => `
                     <div><b>${i.name}</b> (${i.duration}p)</div>
                     <div style="display:flex; justify-content:space-between; font-size:9px;">
-                        <span>KTV: ${i.ktvName || 'N/A'} (${i.ktvType})</span>
+                        <span>KTV: ${i.ktvName || 'N/A'}</span>
                         <span>${i.vnd.toLocaleString()} đ</span>
                     </div>
                 `).join('')}
@@ -594,21 +736,28 @@
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;"><span>Thành tiền:</span><span>${tx.totalVnd.toLocaleString()} đ</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>Hình thức TT:</span><span><b>${tx.paymentMethod}</b></span></div>
                 ${tx.note ? `<p style="font-size:9px;">Ghi chú: ${tx.note}</p>` : ''}
-                <br>
-                <p style="text-align:center; font-size:9px;">Cảm ơn & Hẹn gặp lại Quý khách!</p>
+                <br><p style="text-align:center; font-size:9px;">Cảm ơn & Hẹn gặp lại!</p>
             `;
             printArea.style.display = "block";
             window.print();
             printArea.style.display = "none";
         }
 
-        // BÁO CÁO & BỘ LỌC
+        // BÁO CÁO DOANH THU & KHO
         function toggleFilterInputs() {
             const m = document.getElementById("report-mode").value;
             document.getElementById("group-filter-date").style.display = m === 'day' ? 'block' : 'none';
             document.getElementById("group-filter-month").style.display = m === 'month' ? 'block' : 'none';
             document.getElementById("group-filter-year").style.display = m === 'year' ? 'block' : 'none';
             updateReportUI();
+        }
+
+        function toggleExpFilterInputs() {
+            const m = document.getElementById("exp-report-mode").value;
+            document.getElementById("exp-group-filter-date").style.display = m === 'day' ? 'block' : 'none';
+            document.getElementById("exp-group-filter-month").style.display = m === 'month' ? 'block' : 'none';
+            document.getElementById("exp-group-filter-year").style.display = m === 'year' ? 'block' : 'none';
+            updateExpenseUI();
         }
 
         function updateReportUI() {
@@ -630,7 +779,6 @@
                 return matchTime && matchStatus;
             });
 
-            // Chỉ tính doanh thu thực tế từ đơn HOÀN THÀNH
             let totalRev = 0, totalDisc = 0, totalHdvComm = 0, totalKtvFee = 0;
             let payCash = 0, payQr = 0, payBank = 0, payCard = 0;
             let serviceStats = {}, roomStats = {};
@@ -652,7 +800,6 @@
                 t.items.forEach(i => { serviceStats[i.name] = (serviceStats[i.name] || 0) + 1; });
             });
 
-            // Chi tiêu kho
             const filteredExpenses = expenses.filter(e => {
                 if (mode === 'day') return e.isoDate === filterDate;
                 if (mode === 'month') return e.isoDate.startsWith(filterMonth);
@@ -677,11 +824,10 @@
             const topService = Object.keys(serviceStats).sort((a,b) => serviceStats[b] - serviceStats[a])[0] || 'N/A';
             const topRoom = Object.keys(roomStats).sort((a,b) => roomStats[b] - roomStats[a])[0] || 'N/A';
             document.getElementById("rep-8-stats-details").innerHTML = `
-                🔥 Dịch vụ bán chạy: <b>${topService}</b><br>
-                🏠 Phòng dùng nhiều: <b>${topRoom}</b>
+                🔥 Dịch vụ HOT nhất: <b>${topService}</b><br>
+                🏠 Phòng dùng nhiều nhất: <b>${topRoom}</b>
             `;
 
-            // Render Table
             const tbody = document.getElementById("history-table-body");
             tbody.innerHTML = filteredCache.map((t) => {
                 const isPending = t.status === 'Chờ thanh toán';
@@ -694,12 +840,11 @@
                         <td>${t.customer} (${t.nation})</td>
                         <td>${t.hdv || '-'}</td>
                         <td>${t.room}</td>
-                        <td>${t.items.map(i => `${i.name} (${i.ktvName || 'N/A'})`).join('<br>')}</td>
-                        <td style="color:#805ad5;">${t.totalKtvExtFee ? t.totalKtvExtFee.toLocaleString() + ' đ' : '-'}</td>
-                        <td style="color:#e53e3e;">${t.discount ? t.discount.toLocaleString() + ' đ' : '-'}</td>
+                        <td>${t.items.map(i => i.name).join('<br>')}</td>
                         <td><b>${t.totalVnd.toLocaleString()} đ</b></td>
                         <td>
-                            ${isPending ? `<button class="btn-success" onclick="markAsPaid('${t.id}')">Thanh toán</button>` : ''}
+                            <button class="btn-warning" onclick="switchTab('pos-tab', document.querySelectorAll('.nav-btn')[0]); editTransaction('${t.id}');">Sửa</button>
+                            ${isPending ? `<button class="btn-success" onclick="markAsPaid('${t.id}')">TT</button>` : ''}
                             <button class="btn-danger" onclick="deleteTx(${originalIndex})">Xóa</button>
                         </td>
                     </tr>
@@ -708,10 +853,11 @@
         }
 
         function deleteTx(index) {
-            if(confirm("Bạn có chắc chắn muốn xóa hóa đơn này?")) {
+            if(confirm("Xóa hóa đơn này khỏi lịch sử?")) {
                 transactions.splice(index, 1);
-                localStorage.setItem('spa_transactions_v3', JSON.stringify(transactions));
+                localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
                 updateReportUI();
+                renderPendingTransactionsPOS();
             }
         }
 
@@ -720,7 +866,7 @@
             const name = document.getElementById("exp-name").value;
             const amount = Number(document.getElementById("exp-amount").value) || 0;
 
-            if (!name || amount <= 0) return alert("Vui lòng nhập thông tin hợp lệ!");
+            if (!name || amount <= 0) return alert("Vui lòng điền đủ thông tin vật tư!");
 
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -733,20 +879,35 @@
                 category, name, amount
             });
 
-            localStorage.setItem('spa_expenses_v3', JSON.stringify(expenses));
+            localStorage.setItem('spa_expenses_v4', JSON.stringify(expenses));
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
             updateExpenseUI();
         }
 
         function updateExpenseUI() {
+            const mode = document.getElementById("exp-report-mode").value;
+            const filterDate = document.getElementById("exp-filter-date").value;
+            const filterMonth = document.getElementById("exp-filter-month").value;
+            const filterYear = document.getElementById("exp-filter-year").value;
+
+            const filtered = expenses.filter(e => {
+                if (mode === 'day') return e.isoDate === filterDate;
+                if (mode === 'month') return e.isoDate.startsWith(filterMonth);
+                if (mode === 'year') return e.isoDate.startsWith(filterYear);
+                return true;
+            });
+
+            const totalAmount = filtered.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById("exp-total-val").innerText = totalAmount.toLocaleString() + " đ";
+
             const tbody = document.getElementById("expense-table-body");
-            tbody.innerHTML = expenses.map(e => `
+            tbody.innerHTML = filtered.map(e => `
                 <tr>
                     <td>${e.time}</td>
                     <td><b>${e.category}</b></td>
                     <td>${e.name}</td>
-                    <td style="color:#e53e3e; font-weight:bold;">${e.amount.toLocaleString()} đ</td>
+                    <td style="color:var(--accent-red); font-weight:bold;">${e.amount.toLocaleString()} đ</td>
                 </tr>
             `).join('');
         }
@@ -754,19 +915,62 @@
         function clearAllExpenses() {
             if(confirm("Xóa toàn bộ sổ chi phí kho?")) {
                 expenses = [];
-                localStorage.removeItem('spa_expenses_v3');
+                localStorage.removeItem('spa_expenses_v4');
                 updateExpenseUI();
             }
         }
 
+        // CÀI ĐẶT HE THONG & DANH MUC
         function loadSettingsToUI() {
             document.getElementById("cfg-spa-name").value = SPA_CONFIG.NAME;
             document.getElementById("cfg-spa-address").value = SPA_CONFIG.ADDRESS;
             document.getElementById("cfg-spa-phone").value = SPA_CONFIG.PHONE;
             document.getElementById("cfg-default-usd").value = SPA_CONFIG.USD_RATE;
-            document.getElementById("cfg-bank-id").value = SPA_CONFIG.BANK_ID || "MB";
-            document.getElementById("cfg-bank-no").value = SPA_CONFIG.BANK_NO || "0856112789";
-            document.getElementById("cfg-bank-name").value = SPA_CONFIG.BANK_NAME || "LOTUS HARMONY SPA";
+            renderCategoryEditList();
+        }
+
+        function renderCategoryEditList() {
+            const container = document.getElementById("category-edit-list");
+            container.innerHTML = SPA_CONFIG.CATEGORIES.map((cat, idx) => `
+                <div style="display:flex; gap:6px; margin-bottom:6px;">
+                    <input type="text" value="${cat}" onchange="updateCategoryName(${idx}, this.value)" style="flex:1; padding:4px 8px; font-size:12px; border:1px solid var(--border-color); border-radius:4px;">
+                    <button class="btn-danger" onclick="deleteCategory(${idx})">Xóa</button>
+                </div>
+            `).join('');
+        }
+
+        function updateCategoryName(idx, val) {
+            if (val.trim()) {
+                const oldName = SPA_CONFIG.CATEGORIES[idx];
+                SPA_CONFIG.CATEGORIES[idx] = val.trim();
+                // Đồng bộ cập nhật cho menuData
+                menuData.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
+                saveConfig();
+            }
+        }
+
+        function addNewCategory() {
+            const val = document.getElementById("new-cat-name").value.trim();
+            if (val && !SPA_CONFIG.CATEGORIES.includes(val)) {
+                SPA_CONFIG.CATEGORIES.push(val);
+                document.getElementById("new-cat-name").value = "";
+                saveConfig();
+                renderCategoryEditList();
+            }
+        }
+
+        function deleteCategory(idx) {
+            if (confirm("Bạn muốn xóa danh mục này?")) {
+                SPA_CONFIG.CATEGORIES.splice(idx, 1);
+                saveConfig();
+                renderCategoryEditList();
+            }
+        }
+
+        function saveConfig() {
+            localStorage.setItem('spa_config_v4', JSON.stringify(SPA_CONFIG));
+            renderCategories();
+            renderServices();
         }
 
         function saveSettings() {
@@ -774,34 +978,31 @@
             SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
             SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
             SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
-            SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
-            SPA_CONFIG.BANK_NO = document.getElementById("cfg-bank-no").value;
-            SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value;
 
-            localStorage.setItem('spa_config_v3', JSON.stringify(SPA_CONFIG));
+            saveConfig();
             document.getElementById("web-title").innerText = "🪷 " + SPA_CONFIG.NAME;
             document.getElementById("usd-rate").value = SPA_CONFIG.USD_RATE;
-            alert("Đã lưu thành công cài đặt hệ thống!");
+            alert("Đã lưu cài đặt thành công!");
         }
 
         function clearAllTransactions() {
-            if(confirm("⚠️ XÓA TOÀN BỘ LỊCH SỬ GIAO DỊCH VÀ CHI PHÍ KHO?")) {
-                transactions = [];
-                expenses = [];
-                localStorage.removeItem('spa_transactions_v3');
-                localStorage.removeItem('spa_expenses_v3');
+            if(confirm("⚠️ CẢNH BÁO: XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA?")) {
+                transactions = []; expenses = [];
+                localStorage.removeItem('spa_transactions_v4');
+                localStorage.removeItem('spa_expenses_v4');
                 updateReportUI();
                 updateExpenseUI();
-                alert("Đã làm sạch dữ liệu thành công!");
+                renderPendingTransactionsPOS();
+                alert("Đã xóa sạch dữ liệu!");
             }
         }
 
         function exportReportExcel() {
-            if (filteredCache.length === 0) return alert("Không có dữ liệu để xuất Excel!");
-            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ,Vé KTV Ngoài,Giảm Giá,Hình Thức TT,Thành Tiền VND\n";
+            if (filteredCache.length === 0) return alert("Không có dữ liệu!");
+            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ,Giảm Giá,Hình Thức TT,Thành Tiền VND\n";
             filteredCache.forEach(t => {
                 const svcs = t.items.map(i => i.name).join(' | ');
-                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.totalKtvExtFee}","${t.discount}","${t.paymentMethod}","${t.totalVnd}"\n`;
+                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.discount}","${t.paymentMethod}","${t.totalVnd}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
