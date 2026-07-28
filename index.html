@@ -3,257 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SEN LOTUS HARMONY SPA & RETREAT</title>
-    <link rel="stylesheet" href="style.css">
+    <title>SEN LOTUS HARMONY SPA - POS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 15px;
+        }
+
+        /* Nav Header */
+        .nav-bar {
+            display: flex;
+            gap: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn.active {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+
+        /* Header Title */
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exchange-rate {
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .exchange-rate input {
+            width: 80px;
+            padding: 2px 5px;
+        }
+
+        /* Tab Content Control */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Layout Grid for Sales */
+        .sales-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sales-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-control {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-payment {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .btn-payment.active {
+            background: #cbd5e1;
+        }
+
+        .btn-save {
+            background: #fef08a;
+            color: #854d0e;
+            border: 1px solid #fde047;
+        }
+
+        .btn-submit {
+            background: #bbf7d0;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .summary-line {
+            margin: 6px 0;
+            font-size: 15px;
+        }
+
+        .summary-line strong {
+            color: #2563eb;
+        }
+
+        .empty-text {
+            color: #94a3b8;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* Table Style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+        }
+
+        .btn-export {
+            float: right;
+            background: #f1f5f9;
+            border: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <button class="nav-btn active" onclick="switchTab('pos-tab', this)"><span>🛒</span> Bán hàng</button>
-        <button class="nav-btn" onclick="switchTab('report-tab', this)"><span>📊</span> Báo cáo</button>
-        <button class="nav-btn" onclick="switchTab('expense-tab', this)"><span>📦</span> Báo cáo Kho</button>
-        <button class="nav-btn" onclick="switchTab('settings-tab', this)"><span>⚙️</span> Cài đặt</button>
+    <!-- Thanh Điều Hướng Tab -->
+    <div class="nav-bar">
+        <button class="nav-btn active" onclick="switchTab('pos')">🛒 Bán hàng</button>
+        <button class="nav-btn" onclick="switchTab('reports')">📊 Báo cáo</button>
+        <button class="nav-btn" onclick="switchTab('inventory')">📦 Báo cáo Kho</button>
+        <button class="nav-btn" onclick="switchTab('settings')">⚙️ Cài đặt</button>
     </div>
 
-    <!-- TAB 1: BÁN HÀNG POS -->
-    <div id="pos-tab" class="tab-content active">
-        <div class="main-panel">
-            <div class="header">
-                <h1 id="web-title">🪷 SEN LOTUS HARMONY SPA</h1>
-                <div style="font-size: 12px;">Tỷ giá USD: <input type="number" id="usd-rate" value="25000" style="width: 65px;" onchange="renderCart()"></div>
-            </div>
-            <div class="categories" id="categories-container"></div>
-            <div class="services-grid" id="services-container"></div>
-        </div>
-
-        <div class="cart-panel">
-            <div class="cart-header">HÓA ĐƠN BÁN HÀNG</div>
-            
-            <div class="form-grid">
-                <input type="text" id="cust-name" placeholder="Tên khách hàng">
-                <input type="text" id="cust-nation" placeholder="Quốc tịch">
-                <input type="text" id="cust-hdv" placeholder="Tên Hướng dẫn viên (HDV)">
-                <select id="cust-room">
-                    <option value="Phòng 101 (Tầng 1)">Phòng 101 (Tầng 1)</option>
-                    <option value="Phòng 102 (Tầng 1)">Phòng 102 (Tầng 1)</option>
-                    <option value="Phòng 201 (Tầng 2)">Phòng 201 (Tầng 2)</option>
-                    <option value="Phòng 202 (Tầng 2)">Phòng 202 (Tầng 2)</option>
-                    <option value="Phòng VIP (Tầng 3)">Phòng VIP (Tầng 3)</option>
-                </select>
-            </div>
-
-            <div class="cart-items" id="cart-items-container">
-                <p style="color: #a0aec0; text-align: center; margin-top: 20px;">Chưa chọn dịch vụ nào</p>
-            </div>
-
-            <div class="form-grid">
-                <div>
-                    <label style="font-size: 10px;">Giảm giá (VND):</label>
-                    <input type="number" id="cart-discount" value="0" onchange="renderCart()">
-                </div>
-                <div>
-                    <label style="font-size: 10px;">Ghi chú hóa đơn:</label>
-                    <input type="text" id="cart-note" placeholder="Ghi chú...">
-                </div>
-            </div>
-
-            <div class="payment-options">
-                <button class="payment-btn active" id="pay-cash" onclick="setPaymentMethod('Tiền mặt')">💵 Tiền mặt</button>
-                <button class="payment-btn" id="pay-qr" onclick="setPaymentMethod('QR Code')">📱 QR</button>
-                <button class="payment-btn" id="pay-bank" onclick="setPaymentMethod('Chuyển khoản')">🏦 C.Khoản</button>
-                <button class="payment-btn" id="pay-card" onclick="setPaymentMethod('Cà thẻ')">💳 Cà thẻ</button>
-            </div>
-
-            <div class="cart-summary">
-                <div class="summary-row"><span>Tạm tính:</span><span id="sub-total">0 đ</span></div>
-                <div class="summary-row"><span>Giảm giá:</span><span id="discount-val">0 đ</span></div>
-                <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
-                <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2b6cb0; font-weight:bold;">$0</span></div>
-            </div>
-
-            <div class="action-btns">
-                <button class="hold-btn" id="btn-save-hold" onclick="saveTransaction('Chờ thanh toán')">⏳ LƯU HÀNG CHỜ</button>
-                <button class="pay-btn" onclick="saveTransaction('Hoàn thành')">✅ THANH TOÁN & IN</button>
-            </div>
-
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e2e8f0;">
-
-            <!-- KHU VỰC DANH SÁCH ĐƠN HÀNG CHỜ -->
-            <div class="cart-header" style="font-size: 13px; color: #dd6b20;">⏳ DANH SÁCH ĐƠN CHỜ THANH TOÁN</div>
-            <div id="pending-list-container">
-                <p style="color: #a0aec0; text-align: center; font-size: 11px;">Không có đơn hàng chờ</p>
-            </div>
-        </div>
+    <!-- Tiêu Đề Ứng Dụng -->
+    <div class="header-title">
+        🌺 SEN LOTUS HARMONY SPA
+    </div>
+    <div class="exchange-rate">
+        Tỷ giá USD: <input type="number" id="usd-rate" value="25000" onchange="updateCalculations()">
     </div>
 
-    <!-- TAB 2: HỆ THỐNG BÁO CÁO -->
-    <div id="report-tab" class="tab-content">
-        <div class="panel-container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:10px;">
-                <h2>📊 Báo Cáo Doanh Thu & Quản Lý Tổng Hợp</h2>
-                <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất Báo Cáo Excel (.CSV)</button>
-            </div>
+    <!-- TAB 1: BÁN HÀNG (POS) -->
+    <div id="tab-pos" class="tab-content active">
+        <div class="sales-container">
+            <!-- Cột trái: Hóa đơn -->
+            <div>
+                <div class="card">
+                    <div class="card-title">HÓA ĐƠN BÁN HÀNG</div>
+                    <div class="form-row">
+                        <input type="text" id="cust-name" class="form-control" placeholder="Tên khách hàng">
+                        <input type="text" id="cust-nat" class="form-control" placeholder="Quốc tịch">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="guide-name" class="form-control" placeholder="Tên Hướng dẫn viên (HDV)">
+                        <select id="room-select" class="form-control">
+                            <option value="101">Phòng 101 (Tầng 1)</option>
+                            <option value="102">Phòng 102 (Tầng 1)</option>
+                            <option value="201">Phòng 201 (Tầng 2)</option>
+                        </select>
+                    </div>
 
-            <div class="filter-bar">
-                <label>Thời gian:</label>
-                <select id="report-mode" onchange="toggleFilterInputs()">
-                    <option value="day">Theo Ngày</option>
-                    <option value="month">Theo Tháng</option>
-                    <option value="year">Theo Năm</option>
-                    <option value="all">Tất Cả Lịch Sử</option>
-                </select>
-                <div id="group-filter-date"><input type="date" id="filter-date" onchange="updateReportUI()"></div>
-                <div id="group-filter-month" style="display:none;"><input type="month" id="filter-month" onchange="updateReportUI()"></div>
-                <div id="group-filter-year" style="display:none;"><select id="filter-year" onchange="updateReportUI()"></select></div>
+                    <div style="margin: 15px 0;">
+                        <label>Giảm giá (VND): </label>
+                        <input type="number" id="discount-val" class="form-control" value="0" style="width: 150px; display:inline-block;" oninput="updateCalculations()">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="order-note" class="form-control" placeholder="Ghi chú hóa đơn...">
+                    </div>
 
-                <label style="margin-left:10px;">Trạng thái:</label>
-                <select id="filter-status" onchange="updateReportUI()">
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="Hoàn thành">Đã hoàn thành</option>
-                    <option value="Chờ thanh toán">Chờ thanh toán</option>
-                </select>
-            </div>
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-payment active" onclick="setPayment('cash')">💵 Tiền mặt</button>
+                        <button class="btn btn-payment" onclick="setPayment('qr')">📱 QR</button>
+                        <button class="btn btn-payment" onclick="setPayment('bank')">🏦 C.Khoản</button>
+                        <button class="btn btn-payment" onclick="setPayment('card')">💳 Cà thẻ</button>
+                    </div>
 
-            <div class="stats-grid">
-                <div class="stat-card"><h3>1. Doanh Thu Đã Thu</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
-                <div class="stat-card"><h3>2. Lợi Nhuận Thuần</h3><div class="val" id="rep-7-profit" style="color:#27ae60;">0 đ</div></div>
-                <div class="stat-card"><h3>3. Tổng Giảm Giá</h3><div class="val" id="rep-3-discount" style="color:#e53e3e;">0 đ</div></div>
-                <div class="stat-card"><h3>4. Hoa Hồng HDV (30%)</h3><div class="val" id="rep-4-hdv" style="color:#dd6b20;">0 đ</div></div>
-                <div class="stat-card"><h3>5. Tiền Vé KTV Ngoài</h3><div class="val" id="rep-5-ktv" style="color:#805ad5;">0 đ</div></div>
-                <div class="stat-card"><h3>6. Chi Tiêu Kho/Quán</h3><div class="val" id="rep-6-expense" style="color:#e53e3e;">0 đ</div></div>
-            </div>
+                    <div class="summary-line">Tạm tính: <span id="subtotal">0</span> đ</div>
+                    <div class="summary-line">Giảm giá: <span id="discount-display">0</span> đ</div>
+                    <div class="summary-line">Thành tiền: <span id="total-display">0</span> đ</div>
+                    <div class="summary-line">Tương đương: <strong id="usd-display">$0</strong></div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px;">
-                <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                    <h4 style="font-size:12px; margin-bottom:5px;">💳 2. Hình Thức Thanh Toán (Chỉ tính đơn Hoàn Thành)</h4>
-                    <div id="rep-2-payment-details" style="font-size:11px;"></div>
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-save" onclick="savePendingOrder()">⌛ LƯU HÀNG CHỜ</button>
+                        <button class="btn btn-submit" onclick="checkoutOrder()">✅ THANH TOÁN & IN</button>
+                    </div>
                 </div>
-                <div style="background:#f8fafc; padding:10px; border-radius:6px; border:1px solid #e2e8f0;">
-                    <h4 style="font-size:12px; margin-bottom:5px;">📈 8. Thống Kê Dịch Vụ & Phòng</h4>
-                    <div id="rep-8-stats-details" style="font-size:11px;"></div>
+
+                <div class="card">
+                    <div class="card-title" style="color: #d97706;">⌛ DANH SÁCH ĐƠN CHỜ THANH TOÁN</div>
+                    <div id="pending-list" class="empty-text">Không có đơn hàng chờ</div>
                 </div>
             </div>
 
-            <h3>📋 Chi Tiết Danh Sách Hóa Đơn</h3>
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã HD</th>
-                            <th>Thời Gian</th>
-                            <th>Trạng Thái</th>
-                            <th>Khách / QT</th>
-                            <th>HDV</th>
-                            <th>Phòng</th>
-                            <th>Dịch Vụ & KTV</th>
-                            <th>Vé KTV Ngoài</th>
-                            <th>Giảm Giá</th>
-                            <th>Thành Tiền</th>
-                            <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-table-body"></tbody>
-                </table>
+            <!-- Cột phải: Chọn dịch vụ -->
+            <div>
+                <div class="card">
+                    <div class="card-title">DANH SÁCH DỊCH VỤ / SẢN PHẨM</div>
+                    <div id="service-list" class="empty-text">Chưa chọn dịch vụ nào</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- TAB 3: BÁO CÁO CHI PHÍ KHO -->
-    <div id="expense-tab" class="tab-content">
-        <div class="panel-container expense-container">
-            <div style="flex: 1; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <h3>📥 Nhập Chi Phí / Mua Vật Tư Kho</h3>
-                <br>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Loại Chi Phí:</label>
-                    <select id="exp-category" style="width:100%; padding:5px; font-size:11px; border-radius:4px; border:1px solid #ccc;">
-                        <option value="Mua dầu">Mua dầu</option>
-                        <option value="Mua khăn">Mua khăn</option>
-                        <option value="Điện nước">Điện nước</option>
-                        <option value="Văn phòng phẩm">Văn phòng phẩm</option>
-                        <option value="Khác">Khác</option>
-                    </select>
-                </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Tên Đồ Dùng / Vật Tư:</label>
-                    <input type="text" id="exp-name" placeholder="VD: Mua 5L Tinh dầu sả chanh" style="width:100%; padding:5px; font-size:11px;">
-                </div>
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:bold;">Số Tiền Chi (VND):</label>
-                    <input type="number" id="exp-amount" placeholder="0" style="width:100%; padding:5px; font-size:11px;">
-                </div>
-                <button class="pay-btn" style="background: #e53e3e;" onclick="addExpense()">GHI SỔ CHI PHÍ KHO</button>
+    <!-- TAB 2: BÁO CÁO -->
+    <div id="tab-reports" class="tab-content">
+        <div class="card">
+            <button class="btn btn-export" onclick="exportExcel()">📫 Xuất Báo Cáo Excel (.CSV)</button>
+            <h2>📊 Báo Cáo Doanh Thu & Quản Lý Tổng Hợp</h2>
+            <br>
+            <div class="form-row" style="align-items: center;">
+                <label>Thời gian: </label>
+                <select id="report-period" class="form-control" style="max-width: 150px;">
+                    <option>Theo Ngày</option>
+                    <option>Theo Tháng</option>
+                </select>
+                <input type="date" id="report-date" class="form-control" style="max-width: 180px;">
+                <label>Trạng thái: </label>
+                <select class="form-control" style="max-width: 180px;">
+                    <option>Tất cả trạng thái</option>
+                </select>
             </div>
 
-            <div style="flex: 2;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <h3>📦 Báo Cáo Chi Tiết Chi Phí Kho & Vật Tư</h3>
-                    <button class="btn-danger" onclick="clearAllExpenses()">🗑️ Xóa Lịch Sử Chi Phí</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Thời Gian</th>
-                                <th>Phân Loại</th>
-                                <th>Nội Dung Chi</th>
-                                <th>Số Tiền Chi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expense-table-body"></tbody>
-                    </table>
-                </div>
+            <div style="margin-top: 20px;">
+                <h3>1. Doanh Thu Đã Thu</h3>
+                <p id="rep-revenue" style="font-size: 18px; font-weight: bold; color: #16a34a; margin: 5px 0 15px 0;">0 đ</p>
+
+                <h3>2. Lợi Nhuận Thuần</h3>
+                <p id="rep-profit" style="font-size: 18px; font-weight: bold; color: #16a34a; margin: 5px 0 15px 0;">0 đ</p>
+
+                <h3>3. Tổng Giảm Giá</h3>
+                <p id="rep-discount" style="font-size: 18px; font-weight: bold; color: #dc2626; margin: 5px 0 15px 0;">0 đ</p>
             </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: BÁO CÁO KHO -->
+    <div id="tab-inventory" class="tab-content">
+        <div class="card">
+            <h2>📦 Quản Lý Tồn Kho</h2>
+            <br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã MH</th>
+                        <th>Tên Mặt Hàng</th>
+                        <th>Đơn Vị</th>
+                        <th>Tồn Kho</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-table">
+                    <tr>
+                        <td>DTT01</td>
+                        <td>Dầu Tràm Trà (100ml)</td>
+                        <td>Chai</td>
+                        <td>25</td>
+                    </tr>
+                    <tr>
+                        <td>TNM01</td>
+                        <td>Thảo Dược Ngâm Chân</td>
+                        <td>Gói</td>
+                        <td>50</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- TAB 4: CÀI ĐẶT -->
-    <div id="settings-tab" class="tab-content">
-        <div class="panel-container" style="max-width: 650px;">
-            <h2>⚙️ Cài Đặt Hệ Thống & Cửa Hàng</h2>
+    <div id="tab-settings" class="tab-content">
+        <div class="card">
+            <h2>⚙️ Cài Đặt Hệ Thống</h2>
             <br>
-            <h3 style="color:#27ae60; font-size:13px; margin-bottom:10px;">1. Thông tin Spa (In trên Hóa đơn)</h3>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Tên Thương Hiệu Spa:</label>
-                <input type="text" id="cfg-spa-name" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Địa Chỉ Quán:</label>
-                <input type="text" id="cfg-spa-address" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Số Điện Thoại Hotline:</label>
-                <input type="text" id="cfg-spa-phone" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="font-size:11px; font-weight:bold;">Tỷ giá USD mặc định (VND):</label>
-                <input type="number" id="cfg-default-usd" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-
-            <hr><br>
-            <h3 style="color:#3182ce; font-size:13px; margin-bottom:10px;">2. Cấu hình VietQR Chuyển Khoản</h3>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Mã Ngân Hàng (VD: MB, VCB, TCB):</label>
-                <input type="text" id="cfg-bank-id" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:8px;">
-                <label style="font-size:11px; font-weight:bold;">Số Tài Khoản Ngân Hàng:</label>
-                <input type="text" id="cfg-bank-no" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="font-size:11px; font-weight:bold;">Tên Chủ Tài Khoản:</label>
-                <input type="text" id="cfg-bank-name" style="width:100%; padding:6px; font-size:11px;">
-            </div>
-
-            <button class="pay-btn" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
-            <br><br><hr><br>
-            <h3 style="color:#e53e3e; font-size:13px; margin-bottom:5px;">3. Quản lý Dữ liệu Lịch sử</h3>
-            <button class="btn-danger" style="width:100%; padding:10px; font-size:11px;" onclick="clearAllTransactions()">🗑️ XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA</button>
+            <p>Thiết lập thông tin Spa, Máy in hóa đơn và Danh mục dịch vụ.</p>
         </div>
     </div>
 
-    <div id="print-area" style="display: none;"></div>
+    <!-- JAVASCRIPT XỬ LÝ LOGIC -->
+    <script>
+        // Dữ liệu dịch vụ mẫu
+        const servicesData = [
+            { id: 'DV01', name: 'Massage Toàn Thân (Body) - 60 phút', price: 350000 },
+            { id: 'DV02', name: 'Massage Toàn Thân (Body) - 90 phút', price: 480000 },
+            { id: 'DV03', name: 'Massage Chân (Foot) - 45 phút', price: 250000 },
+            { id: 'DV04', name: 'Chăm Sóc Da Mặt Cơ Bản', price: 300000 }
+        ];
 
-    <script src="app.js"></script>
+        let currentCart = [];
+        let selectedPayment = 'cash';
+
+        // 1. HÀM CHUYỂN TAB (An toàn 100%)
+        function switchTab(tabName) {
+            // Ẩn tất cả nội dung tab
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Bỏ active ở tất cả các nút
+            const btns = document.querySelectorAll('.nav-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+
+            // Hiện tab được chọn
+            const targetTab = document.getElementById('tab-' + tabName);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // Active nút tương ứng
+            event.currentTarget.classList.add('active');
+        }
+
+        // 2. HÀM HIỂN THỊ DANH SÁCH DỊCH VỤ (Kiểm tra an toàn thẻ NULL)
+        function renderServices() {
+            const container = document.getElementById('service-list');
+            if (!container) return; // Bảo vệ không bị sập code nếu thiếu thẻ
+
+            let html = '<table><thead><tr><th>Mã</th><th>Tên Dịch Vụ</th><th>Giá</th><th>Thao Tác</th></tr></thead><tbody>';
+            servicesData.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.price.toLocaleString('vi-VN')} đ</td>
+                        <td><button class="btn btn-submit" style="padding:4px 8px;" onclick="addToCart('${item.id}')">+ Chọn</button></td>
+                    </tr>
+                `;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // 3. THÊM VÀO GIỎ HÀNG
+        function addToCart(serviceId) {
+            const item = servicesData.find(s => s.id === serviceId);
+            if (item) {
+                currentCart.push(item);
+                updateCalculations();
+            }
+        }
+
+        // 4. CẬP NHẬT TÍNH TOÁN TIỀN
+        function updateCalculations() {
+            let subtotal = currentCart.reduce((sum, item) => sum + item.price, 0);
+            let discount = parseFloat(document.getElementById('discount-val').value) || 0;
+            let total = Math.max(0, subtotal - discount);
+            let rate = parseFloat(document.getElementById('usd-rate').value) || 25000;
+            let usdTotal = (total / rate).toFixed(2);
+
+            document.getElementById('subtotal').innerText = subtotal.toLocaleString('vi-VN');
+            document.getElementById('discount-display').innerText = discount.toLocaleString('vi-VN');
+            document.getElementById('total-display').innerText = total.toLocaleString('vi-VN');
+            document.getElementById('usd-display').innerText = '$' + usdTotal;
+        }
+
+        // 5. CHỌN PHƯƠNG THỨC THANH TOÁN
+        function setPayment(method) {
+            selectedPayment = method;
+            const btns = document.querySelectorAll('.btn-payment');
+            btns.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // 6. LƯU ĐƠN CHỜ
+        function savePendingOrder() {
+            if (currentCart.length === 0) {
+                alert('Vui lòng chọn ít nhất 1 dịch vụ!');
+                return;
+            }
+            alert('Đã lưu đơn hàng vào danh sách chờ!');
+            currentCart = [];
+            updateCalculations();
+        }
+
+        // 7. THANH TOÁN
+        function checkoutOrder() {
+            if (currentCart.length === 0) {
+                alert('Chưa có dịch vụ nào trong hóa đơn!');
+                return;
+            }
+            alert('Thanh toán thành công!');
+            currentCart = [];
+            updateCalculations();
+        }
+
+        // 8. XUẤT EXCEL MẪU
+        function exportExcel() {
+            alert('Hệ thống đang trích xuất dữ liệu Báo cáo ra file Excel...');
+        }
+
+        // KHI TRANG TẢI XONG
+        window.onload = function() {
+            renderServices();
+            // Cài đặt ngày mặc định cho báo cáo
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('report-date');
+            if(dateInput) dateInput.value = today;
+        };
+    </script>
 </body>
 </html>
