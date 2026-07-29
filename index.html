@@ -140,7 +140,7 @@
                 <div class="categories" id="categories-container"></div>
                 <div class="services-grid" id="services-container"></div>
 
-                <!-- KHU VỰC HÀNG CHỜ THANH TOÁN (NGAY MÀN BÁN HÀNG) -->
+                <!-- KHU VỰC HÀNG CHỜ THANH TOÁN -->
                 <div class="pending-section">
                     <div class="pending-title">
                         <span>⏳ ĐƠN HÀNG ĐANG CHỜ THANH TOÁN</span>
@@ -290,9 +290,8 @@
     <!-- TAB 3: BÁO CÁO CHI PHÍ KHO -->
     <div id="expense-tab" class="tab-content">
         <div class="panel-container">
-            <h2>📦 Quan Lý & Báo Cáo Chi Phí Kho / Vật Tư</h2>
+            <h2>📦 Quản Lý & Báo Cáo Chi Phí Kho / Vật Tư</h2>
             <br>
-            <!-- LỌC BÁO CÁO KHO -->
             <div class="filter-bar">
                 <label>Xem chi phí kho theo:</label>
                 <select id="exp-report-mode" onchange="toggleExpFilterInputs()">
@@ -361,21 +360,47 @@
         </div>
     </div>
 
-    <!-- TAB 4: CÀI ĐẶT DỊCH VỤ VÀ CỬA HÀNG -->
+    <!-- TAB 4: CÀI ĐẶT DỊCH VỤ, MÃ QR & DỰ PHÒNG -->
     <div id="settings-tab" class="tab-content">
-        <div class="panel-container" style="max-width: 700px;">
-            <h2>⚙️ Cài Đặt Hệ Thống & Cửa Hàng</h2>
+        <div class="panel-container" style="max-width: 750px;">
+            <h2>⚙️ Cài Đặt Hệ Thống & Mã QR Thanh Toán</h2>
             <br>
-            <!-- 1. QUẢN LÝ DANH MỤC BÁN HÀNG -->
-            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">1. Đổi Tên / Quản Lý Danh Mục Bán Hàng</h3>
+            
+            <!-- 1. CÀI ĐẶT MÃ QR THANH TOÁN VIETQR -->
+            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 1. Cấu Hình Mã VietQR Chuyển Khoản Ngân Hàng</h3>
+            <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:11px; font-weight:600;">Ngân hàng:</label>
+                    <select id="cfg-bank-id" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                        <option value="MB">MBBank (Ngân Hàng Quân Đội)</option>
+                        <option value="VCB">Vietcombank</option>
+                        <option value="TCB">Techcombank</option>
+                        <option value="VPB">VPBank</option>
+                        <option value="ACB">ACB</option>
+                        <option value="BIDV">BIDV</option>
+                        <option value="CTG">VietinBank</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:11px; font-weight:600;">Số Tài Khoản Ngân Hàng:</label>
+                    <input type="text" id="cfg-bank-acc" placeholder="VD: 0987654321" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:11px; font-weight:600;">Tên Chủ Tài Khoản (Viết hoa không dấu):</label>
+                    <input type="text" id="cfg-bank-name" placeholder="VD: NGUYEN VAN A" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                </div>
+            </div>
+
+            <!-- 2. QUẢN LÝ DANH MỤC BÁN HÀNG -->
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏷️ 2. Quản Lý / Đổi Tên Danh Mục Bán Hàng</h3>
             <div style="display:flex; gap:6px; margin-bottom:10px;">
                 <input type="text" id="new-cat-name" placeholder="Tên danh mục mới..." style="flex:1; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
                 <button class="btn-success" onclick="addNewCategory()">Thêm Danh Mục</button>
             </div>
-            <div id="category-edit-list" style="margin-bottom:15px; background:var(--bg-main); padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
+            <div id="category-edit-list" style="margin-bottom:20px; background:var(--bg-main); padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
 
-            <hr><br>
-            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">2. Thông tin Spa (In trên Hóa đơn)</h3>
+            <!-- 3. THÔNG TIN CỬA HÀNG -->
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏪 3. Thông tin Spa (In trên Hóa đơn)</h3>
             <div style="margin-bottom:8px;">
                 <label style="font-size:11px; font-weight:600;">Tên Thương Hiệu Spa:</label>
                 <input type="text" id="cfg-spa-name" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
@@ -393,9 +418,19 @@
                 <input type="number" id="cfg-default-usd" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
             </div>
 
-            <button class="pay-btn" style="width:100%;" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
-            <br><br><hr><br>
-            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:5px;">3. Quản lý Dữ liệu Lịch sử</h3>
+            <button class="pay-btn" style="width:100%; margin-bottom:25px;" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
+            <hr><br>
+
+            <!-- 4. GIẢI PHÁP AN TOÀN DỮ LIỆU & BẢO TRÌ DỰ PHÒNG -->
+            <h3 style="color:var(--accent-orange); font-size:13px; margin-bottom:10px;">🛡️ 4. Sao Lưu Dự Phòng & Khôi Phục Dữ Liệu</h3>
+            <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Xuất bản sao lưu dữ liệu thường xuyên để bảo vệ dữ liệu hóa đơn, tránh sự cố mất dữ liệu khi trình duyệt hoặc máy tính bị lỗi.</p>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="btn-excel" style="flex:1;" onclick="backupSystemData()">💾 Xuất File Sao Lưu (JSON)</button>
+                <button class="btn-warning" style="flex:1;" onclick="document.getElementById('restore-file-input').click()">📂 Nhập File Khôi Phục</button>
+                <input type="file" id="restore-file-input" style="display:none;" accept=".json" onchange="restoreSystemData(event)">
+            </div>
+
+            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:5px;">⚠️ 5. Xóa Sạch Dữ Liệu</h3>
             <button class="btn-danger" style="width:100%; padding:10px; font-size:11px;" onclick="clearAllTransactions()">🗑️ XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA</button>
         </div>
     </div>
@@ -403,14 +438,27 @@
     <div id="print-area" style="display: none;"></div>
 
     <script>
-        // CONFIG VÀ DANH MỤC BAN ĐẦU
-        let SPA_CONFIG = JSON.parse(localStorage.getItem('spa_config_v4') || JSON.stringify({
+        // BẢO VỆ DỮ LIỆU BAN ĐẦU
+        function safeGetJSON(key, defaultVal) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultVal;
+            } catch (e) {
+                console.error("Lỗi đọc dữ liệu từ localStorage, sử dụng giá trị mặc định", e);
+                return defaultVal;
+            }
+        }
+
+        let SPA_CONFIG = safeGetJSON('spa_config_v5', {
             NAME: "SEN LOTUS HARMONY SPA & RETREAT",
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
             USD_RATE: 25000,
+            BANK_ID: "MB",
+            BANK_ACC: "0856112789",
+            BANK_NAME: "SEN LOTUS SPA",
             CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"]
-        }));
+        });
 
         const menuData = [
             { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
@@ -426,11 +474,11 @@
         ];
 
         let cart = [];
-        let editingTxId = null; // Biến kiểm tra hóa đơn đang chỉnh sửa
+        let editingTxId = null;
         let currentCategory = "Tất cả";
         let selectedPayment = "Tiền mặt";
-        let transactions = JSON.parse(localStorage.getItem('spa_transactions_v4') || '[]');
-        let expenses = JSON.parse(localStorage.getItem('spa_expenses_v4') || '[]');
+        let transactions = safeGetJSON('spa_transactions_v5', []);
+        let expenses = safeGetJSON('spa_expenses_v5', []);
         let filteredCache = [];
 
         function init() {
@@ -473,7 +521,6 @@
             if (tabId === 'pos-tab') renderPendingTransactionsPOS();
         }
 
-        // QUẢN LÝ DANH MỤC
         function renderCategories() {
             const categories = ["Tất cả", ...SPA_CONFIG.CATEGORIES];
             document.getElementById("categories-container").innerHTML = categories.map(cat => 
@@ -573,7 +620,6 @@
             document.getElementById("total-usd").innerText = '$' + (totalVnd / rate).toFixed(1);
         }
 
-        // LƯU/CẬP NHẬT GIAO DỊCH
         function saveTransaction(status) {
             if (cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
@@ -591,7 +637,7 @@
             const hdvName = document.getElementById("cust-hdv").value.trim();
 
             let tx;
-            if (editingTxId) { // Đang chỉnh sửa bill có sẵn
+            if (editingTxId) {
                 tx = transactions.find(t => t.id === editingTxId);
                 tx.status = status;
                 tx.customer = document.getElementById("cust-name").value || "Khách lẻ";
@@ -606,7 +652,7 @@
                 tx.totalVnd = totalVnd;
                 tx.totalUsd = (totalVnd / rate).toFixed(1);
                 tx.note = document.getElementById("cart-note").value;
-            } else { // Tạo bill mới hoàn toàn
+            } else {
                 tx = {
                     id: 'HD' + Date.now().toString().slice(-6),
                     status: status,
@@ -628,7 +674,7 @@
                 transactions.unshift(tx);
             }
 
-            localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
+            localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
 
             if (status === 'Hoàn thành') {
                 printThermalBill(tx, subTotal);
@@ -653,7 +699,6 @@
             renderCart();
         }
 
-        // TẢI ĐƠN HÀNG LÊN FORM ĐỂ CHỈNH SỬA
         function editTransaction(txId) {
             const tx = transactions.find(t => t.id === txId);
             if (!tx) return;
@@ -702,7 +747,7 @@
             const tx = transactions.find(t => t.id === txId);
             if (tx) {
                 tx.status = 'Hoàn thành';
-                localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
+                localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
                 if (editingTxId === txId) resetCartForm();
                 renderPendingTransactionsPOS();
                 updateReportUI();
@@ -710,8 +755,24 @@
             }
         }
 
+        // TẠO VIETQR TỰ ĐỘNG VÀ IN BILL
         function printThermalBill(tx, subTotal) {
             const printArea = document.getElementById("print-area");
+
+            // Kiểm tra xem hóa đơn có dùng QR / Chuyển khoản không để tạo mã VietQR động
+            let qrImageHtml = '';
+            if ((tx.paymentMethod === 'QR Code' || tx.paymentMethod === 'Chuyển khoản') && SPA_CONFIG.BANK_ACC) {
+                const qrUrl = `https://img.vietqr.io/image/${SPA_CONFIG.BANK_ID}-${SPA_CONFIG.BANK_ACC}-compact2.png?amount=${tx.totalVnd}&addInfo=${encodeURIComponent(tx.id + ' Thanh toan Spa')}&accountName=${encodeURIComponent(SPA_CONFIG.BANK_NAME || '')}`;
+                qrImageHtml = `
+                    <p>--------------------------------</p>
+                    <div style="text-align: center;">
+                        <b style="font-size:10px;">QUÉT MÃ THANH TOÁN (VIETQR)</b><br>
+                        <img src="${qrUrl}" style="width: 130px; height: 130px; margin-top: 5px;"><br>
+                        <small style="font-size:8px;">NH: ${SPA_CONFIG.BANK_ID} - STK: ${SPA_CONFIG.BANK_ACC}</small>
+                    </div>
+                `;
+            }
+
             printArea.innerHTML = `
                 <div style="text-align: center;">
                     <h2>🪷 ${SPA_CONFIG.NAME}</h2>
@@ -736,6 +797,7 @@
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;"><span>Thành tiền:</span><span>${tx.totalVnd.toLocaleString()} đ</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>Hình thức TT:</span><span><b>${tx.paymentMethod}</b></span></div>
                 ${tx.note ? `<p style="font-size:9px;">Ghi chú: ${tx.note}</p>` : ''}
+                ${qrImageHtml}
                 <br><p style="text-align:center; font-size:9px;">Cảm ơn & Hẹn gặp lại!</p>
             `;
             printArea.style.display = "block";
@@ -855,7 +917,7 @@
         function deleteTx(index) {
             if(confirm("Xóa hóa đơn này khỏi lịch sử?")) {
                 transactions.splice(index, 1);
-                localStorage.setItem('spa_transactions_v4', JSON.stringify(transactions));
+                localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
                 updateReportUI();
                 renderPendingTransactionsPOS();
             }
@@ -879,7 +941,7 @@
                 category, name, amount
             });
 
-            localStorage.setItem('spa_expenses_v4', JSON.stringify(expenses));
+            localStorage.setItem('spa_expenses_v5', JSON.stringify(expenses));
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
             updateExpenseUI();
@@ -915,17 +977,20 @@
         function clearAllExpenses() {
             if(confirm("Xóa toàn bộ sổ chi phí kho?")) {
                 expenses = [];
-                localStorage.removeItem('spa_expenses_v4');
+                localStorage.removeItem('spa_expenses_v5');
                 updateExpenseUI();
             }
         }
 
-        // CÀI ĐẶT HE THONG & DANH MUC
+        // CÀI ĐẶT HỆ THỐNG
         function loadSettingsToUI() {
             document.getElementById("cfg-spa-name").value = SPA_CONFIG.NAME;
             document.getElementById("cfg-spa-address").value = SPA_CONFIG.ADDRESS;
             document.getElementById("cfg-spa-phone").value = SPA_CONFIG.PHONE;
             document.getElementById("cfg-default-usd").value = SPA_CONFIG.USD_RATE;
+            document.getElementById("cfg-bank-id").value = SPA_CONFIG.BANK_ID || "MB";
+            document.getElementById("cfg-bank-acc").value = SPA_CONFIG.BANK_ACC || "";
+            document.getElementById("cfg-bank-name").value = SPA_CONFIG.BANK_NAME || "";
             renderCategoryEditList();
         }
 
@@ -943,7 +1008,6 @@
             if (val.trim()) {
                 const oldName = SPA_CONFIG.CATEGORIES[idx];
                 SPA_CONFIG.CATEGORIES[idx] = val.trim();
-                // Đồng bộ cập nhật cho menuData
                 menuData.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
                 saveConfig();
             }
@@ -968,7 +1032,7 @@
         }
 
         function saveConfig() {
-            localStorage.setItem('spa_config_v4', JSON.stringify(SPA_CONFIG));
+            localStorage.setItem('spa_config_v5', JSON.stringify(SPA_CONFIG));
             renderCategories();
             renderServices();
         }
@@ -978,6 +1042,9 @@
             SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
             SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
             SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
+            SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
+            SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
+            SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
 
             saveConfig();
             document.getElementById("web-title").innerText = "🪷 " + SPA_CONFIG.NAME;
@@ -985,11 +1052,49 @@
             alert("Đã lưu cài đặt thành công!");
         }
 
+        // TÍNH NĂNG DỰ PHÒNG DỮ LIỆU (BACKUP & RESTORE)
+        function backupSystemData() {
+            const backupObj = {
+                config: SPA_CONFIG,
+                transactions: transactions,
+                expenses: expenses,
+                exportDate: new Date().toISOString()
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `SPA_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function restoreSystemData(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.config && data.transactions && data.expenses) {
+                        localStorage.setItem('spa_config_v5', JSON.stringify(data.config));
+                        localStorage.setItem('spa_transactions_v5', JSON.stringify(data.transactions));
+                        localStorage.setItem('spa_expenses_v5', JSON.stringify(data.expenses));
+                        alert("Khôi phục dữ liệu thành công! Trang web sẽ tự động làm mới.");
+                        location.reload();
+                    } else {
+                        alert("File sao lưu không đúng định dạng!");
+                    }
+                } catch (err) {
+                    alert("Lỗi khi đọc file khôi phục!");
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
         function clearAllTransactions() {
             if(confirm("⚠️ CẢNH BÁO: XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA?")) {
                 transactions = []; expenses = [];
-                localStorage.removeItem('spa_transactions_v4');
-                localStorage.removeItem('spa_expenses_v4');
+                localStorage.removeItem('spa_transactions_v5');
+                localStorage.removeItem('spa_expenses_v5');
                 updateReportUI();
                 updateExpenseUI();
                 renderPendingTransactionsPOS();
