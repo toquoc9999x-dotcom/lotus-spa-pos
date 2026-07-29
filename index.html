@@ -359,7 +359,6 @@
             <h2>⚙️ Cài Đặt Hệ Thống, Danh Mục & Dịch Vụ</h2>
             <br>
             
-            <!-- KHU VỰC THÊM/SỬA DỊCH VỤ MỚI BỔ SUNG -->
             <h3 style="color:var(--primary-dark); font-size:14px; margin-bottom:10px;">💆 Quản Lý & Sửa Menu Dịch Vụ Spa</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
@@ -494,10 +493,10 @@
         onSnapshot(doc(db, "spa_store", "config"), (docSnap) => {
             if (docSnap.exists()) {
                 window.SPA_CONFIG = docSnap.data();
-                if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = defaultServices;
-                loadSettingsToUI();
-                renderCategories();
-                renderServices();
+                if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = window.defaultServices;
+                window.loadSettingsToUI();
+                window.renderCategories();
+                window.renderServices();
             }
         });
 
@@ -505,15 +504,15 @@
             window.transactions = [];
             snapshot.forEach((doc) => window.transactions.push(doc.data()));
             window.transactions.sort((a, b) => b.timestamp - a.timestamp);
-            renderPendingTransactionsPOS();
-            updateReportUI();
+            window.renderPendingTransactionsPOS();
+            window.updateReportUI();
         });
 
         onSnapshot(collection(db, "spa_expenses"), (snapshot) => {
             window.expenses = [];
             snapshot.forEach((doc) => window.expenses.push(doc.data()));
             window.expenses.sort((a, b) => b.timestamp - a.timestamp);
-            updateExpenseUI();
+            window.updateExpenseUI();
         });
 
         window.saveTxToFirebase = async (tx) => { await setDoc(doc(db, "spa_transactions", tx.id), tx); };
@@ -524,7 +523,7 @@
     </script>
 
     <script>
-        const defaultServices = [
+        window.defaultServices = [
             { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
             { category: "Tắm & Xông Hơi", name: "Sauna (Xông hơi khoang)", duration: 30, vnd: 150000, usd: 6 },
             { category: "Tắm & Xông Hơi", name: "Himalayan Salt Sauna (Xông hơi đá muối)", duration: 30, vnd: 200000, usd: 8 },
@@ -537,7 +536,7 @@
             { category: "Gội Đầu & Skincare", name: "Gội đầu dưỡng sinh (Scalp Care)", duration: 45, vnd: 250000, usd: 10 }
         ];
 
-        let SPA_CONFIG = {
+        window.SPA_CONFIG = {
             NAME: "SEN LOTUS HARMONY SPA & RETREAT",
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
@@ -546,21 +545,21 @@
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
             CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"],
-            SERVICES: [...defaultServices]
+            SERVICES: [...window.defaultServices]
         };
 
-        let cart = [];
-        let editingTxId = null;
-        let editingSvcIndex = -1;
-        let currentCategory = "Tất cả";
-        let selectedPayment = "Tiền mặt";
-        let transactions = [];
-        let expenses = [];
-        let filteredCache = [];
+        window.cart = [];
+        window.editingTxId = null;
+        window.editingSvcIndex = -1;
+        window.currentCategory = "Tất cả";
+        window.selectedPayment = "Tiền mặt";
+        window.transactions = [];
+        window.expenses = [];
+        window.filteredCache = [];
 
-        function init() {
-            document.getElementById("web-title").innerText = "🪷 " + SPA_CONFIG.NAME;
-            document.getElementById("usd-rate").value = SPA_CONFIG.USD_RATE || 25000;
+        window.init = function() {
+            document.getElementById("web-title").innerText = "🪷 " + window.SPA_CONFIG.NAME;
+            document.getElementById("usd-rate").value = window.SPA_CONFIG.USD_RATE || 25000;
             
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -580,45 +579,45 @@
                 expYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
             }
 
-            renderCategories();
-            renderServices();
-        }
+            window.renderCategories();
+            window.renderServices();
+        };
 
-        function switchTab(tabId, btn) {
+        window.switchTab = function(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
-            if (tabId === 'report-tab') updateReportUI();
-            if (tabId === 'expense-tab') updateExpenseUI();
-            if (tabId === 'pos-tab') renderPendingTransactionsPOS();
-        }
+            if (tabId === 'report-tab') window.updateReportUI();
+            if (tabId === 'expense-tab') window.updateExpenseUI();
+            if (tabId === 'pos-tab') window.renderPendingTransactionsPOS();
+        };
 
-        function renderCategories() {
-            const categories = ["Tất cả", ...SPA_CONFIG.CATEGORIES];
+        window.renderCategories = function() {
+            const categories = ["Tất cả", ...window.SPA_CONFIG.CATEGORIES];
             document.getElementById("categories-container").innerHTML = categories.map(cat => 
-                `<button class="cat-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`
+                `<button class="cat-btn ${cat === window.currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`
             ).join('');
 
             const svcSelect = document.getElementById("svc-cat");
             if (svcSelect) {
-                svcSelect.innerHTML = SPA_CONFIG.CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+                svcSelect.innerHTML = window.SPA_CONFIG.CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
             }
-        }
+        };
 
-        function filterCategory(cat) {
-            currentCategory = cat;
-            renderCategories();
-            renderServices();
-        }
+        window.filterCategory = function(cat) {
+            window.currentCategory = cat;
+            window.renderCategories();
+            window.renderServices();
+        };
 
-        function getServicesList() {
-            return SPA_CONFIG.SERVICES && SPA_CONFIG.SERVICES.length > 0 ? SPA_CONFIG.SERVICES : defaultServices;
-        }
+        window.getServicesList = function() {
+            return window.SPA_CONFIG.SERVICES && window.SPA_CONFIG.SERVICES.length > 0 ? window.SPA_CONFIG.SERVICES : window.defaultServices;
+        };
 
-        function renderServices() {
-            const list = getServicesList();
-            const filtered = currentCategory === "Tất cả" ? list : list.filter(item => item.category === currentCategory);
+        window.renderServices = function() {
+            const list = window.getServicesList();
+            const filtered = window.currentCategory === "Tất cả" ? list : list.filter(item => item.category === window.currentCategory);
             
             document.getElementById("services-container").innerHTML = filtered.map((item) => `
                 <div class="service-card" onclick="addToCartByItem('${item.name}')">
@@ -630,14 +629,14 @@
                     </div>
                 </div>
             `).join('');
-        }
+        };
 
-        function addToCartByItem(name) {
-            const list = getServicesList();
+        window.addToCartByItem = function(name) {
+            const list = window.getServicesList();
             const item = list.find(s => s.name === name);
             if (!item) return;
 
-            cart.push({
+            window.cart.push({
                 id: Date.now() + Math.random(),
                 name: item.name,
                 duration: item.duration,
@@ -646,35 +645,35 @@
                 ktvName: "",
                 ktvExtFee: 0
             });
-            renderCart();
-        }
+            window.renderCart();
+        };
 
-        function removeFromCart(id) {
-            cart = cart.filter(i => i.id !== id);
-            renderCart();
-        }
+        window.removeFromCart = function(id) {
+            window.cart = window.cart.filter(i => i.id !== id);
+            window.renderCart();
+        };
 
-        function updateCartItem(id, field, val) {
-            const item = cart.find(i => i.id === id);
+        window.updateCartItem = function(id, field, val) {
+            const item = window.cart.find(i => i.id === id);
             if (item) item[field] = (field === 'vnd' || field === 'ktvExtFee') ? Number(val) : val;
-            renderCart();
-        }
+            window.renderCart();
+        };
 
-        function setPaymentMethod(m) {
-            selectedPayment = m;
+        window.setPaymentMethod = function(m) {
+            window.selectedPayment = m;
             document.querySelectorAll('.payment-btn').forEach(b => b.classList.remove('active'));
             if(m==='Tiền mặt') document.getElementById('pay-cash').classList.add('active');
             if(m==='QR Code') document.getElementById('pay-qr').classList.add('active');
             if(m==='Chuyển khoản') document.getElementById('pay-bank').classList.add('active');
             if(m==='Cà thẻ') document.getElementById('pay-card').classList.add('active');
-        }
+        };
 
-        function renderCart() {
+        window.renderCart = function() {
             const container = document.getElementById("cart-items-container");
-            if (cart.length === 0) {
+            if (window.cart.length === 0) {
                 container.innerHTML = '<p style="color: #94a3b8; text-align: center; margin-top: 30px; font-size: 12px;">Chưa chọn dịch vụ nào</p>';
             } else {
-                container.innerHTML = cart.map(item => `
+                container.innerHTML = window.cart.map(item => `
                     <div class="cart-item">
                         <div class="cart-item-row">
                             <b>${item.name}</b>
@@ -695,7 +694,7 @@
                 `).join('');
             }
 
-            const subTotal = cart.reduce((sum, i) => sum + Number(i.vnd), 0);
+            const subTotal = window.cart.reduce((sum, i) => sum + Number(i.vnd), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
@@ -704,15 +703,15 @@
             document.getElementById("discount-val").innerText = discount.toLocaleString() + ' đ';
             document.getElementById("total-vnd").innerText = totalVnd.toLocaleString() + ' đ';
             document.getElementById("total-usd").innerText = '$' + (totalVnd / rate).toFixed(1);
-        }
+        };
 
-        async function saveTransaction(status) {
-            if (cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
+        window.saveTransaction = async function(status) {
+            if (window.cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
-            const subTotal = cart.reduce((sum, i) => sum + Number(i.vnd), 0);
+            const subTotal = window.cart.reduce((sum, i) => sum + Number(i.vnd), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
-            const totalKtvExtFee = cart.reduce((sum, i) => sum + (i.ktvType === 'KTV Ngoài' ? Number(i.ktvExtFee || 0) : 0), 0);
+            const totalKtvExtFee = window.cart.reduce((sum, i) => sum + (i.ktvType === 'KTV Ngoài' ? Number(i.ktvExtFee || 0) : 0), 0);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
 
             const now = new Date();
@@ -723,7 +722,7 @@
             const hdvName = document.getElementById("cust-hdv").value.trim();
 
             const tx = {
-                id: editingTxId || ('HD' + Date.now().toString().slice(-6)),
+                id: window.editingTxId || ('HD' + Date.now().toString().slice(-6)),
                 timestamp: Date.now(),
                 status: status,
                 isoDate: `${yyyy}-${mm}-${dd}`,
@@ -733,10 +732,10 @@
                 hdv: hdvName,
                 hdvCommission: hdvName ? (totalVnd * 0.3) : 0,
                 room: document.getElementById("cust-room").value,
-                items: [...cart],
+                items: [...window.cart],
                 discount: discount,
                 totalKtvExtFee: totalKtvExtFee,
-                paymentMethod: selectedPayment,
+                paymentMethod: window.selectedPayment,
                 totalVnd: totalVnd,
                 totalUsd: (totalVnd / rate).toFixed(1),
                 note: document.getElementById("cart-note").value
@@ -745,17 +744,17 @@
             await window.saveTxToFirebase(tx);
 
             if (status === 'Hoàn thành') {
-                printThermalBill(tx, subTotal);
+                window.printThermalBill(tx, subTotal);
             } else {
                 alert("Đã lưu hàng chờ thanh toán lên Firebase Cloud!");
             }
 
-            resetCartForm();
-        }
+            window.resetCartForm();
+        };
 
-        function resetCartForm() {
-            cart = [];
-            editingTxId = null;
+        window.resetCartForm = function() {
+            window.cart = [];
+            window.editingTxId = null;
             document.getElementById("cart-mode-title").innerText = "HÓA ĐƠN BÁN HÀNG TẠO MỚI";
             document.getElementById("cart-mode-title").style.color = "var(--text-main)";
             document.getElementById("cust-name").value = "";
@@ -763,14 +762,14 @@
             document.getElementById("cust-nation").value = "";
             document.getElementById("cart-discount").value = 0;
             document.getElementById("cart-note").value = "";
-            renderCart();
-        }
+            window.renderCart();
+        };
 
-        function editTransaction(txId) {
-            const tx = transactions.find(t => t.id === txId);
+        window.editTransaction = function(txId) {
+            const tx = window.transactions.find(t => t.id === txId);
             if (!tx) return;
 
-            editingTxId = tx.id;
+            window.editingTxId = tx.id;
             document.getElementById("cart-mode-title").innerText = "✏️ ĐANG SỬA HÓA ĐƠN: " + tx.id;
             document.getElementById("cart-mode-title").style.color = "var(--accent-orange)";
 
@@ -780,15 +779,15 @@
             document.getElementById("cust-room").value = tx.room;
             document.getElementById("cart-discount").value = tx.discount || 0;
             document.getElementById("cart-note").value = tx.note || "";
-            setPaymentMethod(tx.paymentMethod || 'Tiền mặt');
+            window.setPaymentMethod(tx.paymentMethod || 'Tiền mặt');
 
-            cart = [...tx.items];
-            renderCart();
+            window.cart = [...tx.items];
+            window.renderCart();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        };
 
-        function renderPendingTransactionsPOS() {
-            const pendingList = transactions.filter(t => t.status === 'Chờ thanh toán');
+        window.renderPendingTransactionsPOS = function() {
+            const pendingList = window.transactions.filter(t => t.status === 'Chờ thanh toán');
             document.getElementById("pending-count").innerText = `(${pendingList.length} đơn)`;
             
             const tbody = document.getElementById("pos-pending-tbody");
@@ -808,39 +807,39 @@
                     </tr>
                 `).join('');
             }
-        }
+        };
 
-        async function markAsPaid(txId) {
-            const tx = transactions.find(t => t.id === txId);
+        window.markAsPaid = async function(txId) {
+            const tx = window.transactions.find(t => t.id === txId);
             if (tx) {
                 tx.status = 'Hoàn thành';
                 await window.saveTxToFirebase(tx);
-                if (editingTxId === txId) resetCartForm();
+                if (window.editingTxId === txId) window.resetCartForm();
                 alert(`Đã thanh toán thành công hóa đơn ${txId}!`);
             }
-        }
+        };
 
-        function printThermalBill(tx, subTotal) {
+        window.printThermalBill = function(tx, subTotal) {
             const printArea = document.getElementById("print-area");
 
             let qrImageHtml = '';
-            if ((tx.paymentMethod === 'QR Code' || tx.paymentMethod === 'Chuyển khoản') && SPA_CONFIG.BANK_ACC) {
-                const qrUrl = `https://img.vietqr.io/image/${SPA_CONFIG.BANK_ID}-${SPA_CONFIG.BANK_ACC}-compact2.png?amount=${tx.totalVnd}&addInfo=${encodeURIComponent(tx.id + ' Thanh toan Spa')}&accountName=${encodeURIComponent(SPA_CONFIG.BANK_NAME || '')}`;
+            if ((tx.paymentMethod === 'QR Code' || tx.paymentMethod === 'Chuyển khoản') && window.SPA_CONFIG.BANK_ACC) {
+                const qrUrl = `https://img.vietqr.io/image/${window.SPA_CONFIG.BANK_ID}-${window.SPA_CONFIG.BANK_ACC}-compact2.png?amount=${tx.totalVnd}&addInfo=${encodeURIComponent(tx.id + ' Thanh toan Spa')}&accountName=${encodeURIComponent(window.SPA_CONFIG.BANK_NAME || '')}`;
                 qrImageHtml = `
                     <p>--------------------------------</p>
                     <div style="text-align: center;">
                         <b style="font-size:10px;">QUÉT MÃ THANH TOÁN (VIETQR)</b><br>
                         <img src="${qrUrl}" style="width: 130px; height: 130px; margin-top: 5px;"><br>
-                        <small style="font-size:8px;">NH: ${SPA_CONFIG.BANK_ID} - STK: ${SPA_CONFIG.BANK_ACC}</small>
+                        <small style="font-size:8px;">NH: ${window.SPA_CONFIG.BANK_ID} - STK: ${window.SPA_CONFIG.BANK_ACC}</small>
                     </div>
                 `;
             }
 
             printArea.innerHTML = `
                 <div style="text-align: center;">
-                    <h2>🪷 ${SPA_CONFIG.NAME}</h2>
-                    <p style="font-size:9px;">${SPA_CONFIG.ADDRESS}</p>
-                    <p style="font-size:9px;">Hotline: ${SPA_CONFIG.PHONE}</p>
+                    <h2>🪷 ${window.SPA_CONFIG.NAME}</h2>
+                    <p style="font-size:9px;">${window.SPA_CONFIG.ADDRESS}</p>
+                    <p style="font-size:9px;">Hotline: ${window.SPA_CONFIG.PHONE}</p>
                     <p>--------------------------------</p>
                     <b>HÓA ĐƠN THANH TOÁN</b><br>
                     <small>Mã HD: ${tx.id} - ${tx.createdTime}</small>
@@ -866,32 +865,32 @@
             printArea.style.display = "block";
             window.print();
             printArea.style.display = "none";
-        }
+        };
 
-        function toggleFilterInputs() {
+        window.toggleFilterInputs = function() {
             const m = document.getElementById("report-mode").value;
             document.getElementById("group-filter-date").style.display = m === 'day' ? 'block' : 'none';
             document.getElementById("group-filter-month").style.display = m === 'month' ? 'block' : 'none';
             document.getElementById("group-filter-year").style.display = m === 'year' ? 'block' : 'none';
-            updateReportUI();
-        }
+            window.updateReportUI();
+        };
 
-        function toggleExpFilterInputs() {
+        window.toggleExpFilterInputs = function() {
             const m = document.getElementById("exp-report-mode").value;
             document.getElementById("exp-group-filter-date").style.display = m === 'day' ? 'block' : 'none';
             document.getElementById("exp-group-filter-month").style.display = m === 'month' ? 'block' : 'none';
             document.getElementById("exp-group-filter-year").style.display = m === 'year' ? 'block' : 'none';
-            updateExpenseUI();
-        }
+            window.updateExpenseUI();
+        };
 
-        function updateReportUI() {
+        window.updateReportUI = function() {
             const mode = document.getElementById("report-mode").value;
             const statusFilter = document.getElementById("filter-status").value;
             const filterDate = document.getElementById("filter-date").value;
             const filterMonth = document.getElementById("filter-month").value;
             const filterYear = document.getElementById("filter-year").value;
 
-            filteredCache = transactions.filter(t => {
+            window.filteredCache = window.transactions.filter(t => {
                 let matchTime = true;
                 if (mode === 'day') matchTime = t.isoDate === filterDate;
                 if (mode === 'month') matchTime = t.isoDate.startsWith(filterMonth);
@@ -907,7 +906,7 @@
             let payCash = 0, payQr = 0, payBank = 0, payCard = 0;
             let serviceStats = {}, roomStats = {};
 
-            filteredCache.forEach(t => {
+            window.filteredCache.forEach(t => {
                 if (t.status === 'Hoàn thành') {
                     totalRev += t.totalVnd;
                     totalDisc += (t.discount || 0);
@@ -924,7 +923,7 @@
                 t.items.forEach(i => { serviceStats[i.name] = (serviceStats[i.name] || 0) + 1; });
             });
 
-            const filteredExpenses = expenses.filter(e => {
+            const filteredExpenses = window.expenses.filter(e => {
                 if (mode === 'day') return e.isoDate === filterDate;
                 if (mode === 'month') return e.isoDate.startsWith(filterMonth);
                 if (mode === 'year') return e.isoDate.startsWith(filterYear);
@@ -953,7 +952,7 @@
             `;
 
             const tbody = document.getElementById("history-table-body");
-            tbody.innerHTML = filteredCache.map((t) => {
+            tbody.innerHTML = window.filteredCache.map((t) => {
                 const isPending = t.status === 'Chờ thanh toán';
                 return `
                     <tr>
@@ -973,15 +972,15 @@
                     </tr>
                 `;
             }).join('');
-        }
+        };
 
-        async function deleteTx(txId) {
+        window.deleteTx = async function(txId) {
             if(confirm("Xóa hóa đơn này khỏi CSDL Cloud?")) {
                 await window.deleteTxFromFirebase(txId);
             }
-        }
+        };
 
-        async function addExpense() {
+        window.addExpense = async function() {
             const category = document.getElementById("exp-category").value;
             const name = document.getElementById("exp-name").value;
             const amount = Number(document.getElementById("exp-amount").value) || 0;
@@ -1005,15 +1004,15 @@
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
             alert("Đã ghi sổ chi phí kho thành công!");
-        }
+        };
 
-        function updateExpenseUI() {
+        window.updateExpenseUI = function() {
             const mode = document.getElementById("exp-report-mode").value;
             const filterDate = document.getElementById("exp-filter-date").value;
             const filterMonth = document.getElementById("exp-filter-month").value;
             const filterYear = document.getElementById("exp-filter-year").value;
 
-            const filtered = expenses.filter(e => {
+            const filtered = window.expenses.filter(e => {
                 if (mode === 'day') return e.isoDate === filterDate;
                 if (mode === 'month') return e.isoDate.startsWith(filterMonth);
                 if (mode === 'year') return e.isoDate.startsWith(filterYear);
@@ -1032,29 +1031,28 @@
                     <td style="color:var(--accent-red); font-weight:bold;">${e.amount.toLocaleString()} đ</td>
                 </tr>
             `).join('');
-        }
+        };
 
-        function clearAllExpenses() {
+        window.clearAllExpenses = function() {
             if(confirm("Xóa toàn bộ sổ chi phí kho?")) {
-                expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
+                window.expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
             }
-        }
+        };
 
-        function loadSettingsToUI() {
-            document.getElementById("cfg-spa-name").value = SPA_CONFIG.NAME;
-            document.getElementById("cfg-spa-address").value = SPA_CONFIG.ADDRESS;
-            document.getElementById("cfg-spa-phone").value = SPA_CONFIG.PHONE;
-            document.getElementById("cfg-default-usd").value = SPA_CONFIG.USD_RATE;
-            document.getElementById("cfg-bank-id").value = SPA_CONFIG.BANK_ID || "MB";
-            document.getElementById("cfg-bank-acc").value = SPA_CONFIG.BANK_ACC || "";
-            document.getElementById("cfg-bank-name").value = SPA_CONFIG.BANK_NAME || "";
-            renderCategoryEditList();
-            renderServicesTableSettings();
-        }
+        window.loadSettingsToUI = function() {
+            document.getElementById("cfg-spa-name").value = window.SPA_CONFIG.NAME;
+            document.getElementById("cfg-spa-address").value = window.SPA_CONFIG.ADDRESS;
+            document.getElementById("cfg-spa-phone").value = window.SPA_CONFIG.PHONE;
+            document.getElementById("cfg-default-usd").value = window.SPA_CONFIG.USD_RATE;
+            document.getElementById("cfg-bank-id").value = window.SPA_CONFIG.BANK_ID || "MB";
+            document.getElementById("cfg-bank-acc").value = window.SPA_CONFIG.BANK_ACC || "";
+            document.getElementById("cfg-bank-name").value = window.SPA_CONFIG.BANK_NAME || "";
+            window.renderCategoryEditList();
+            window.renderServicesTableSettings();
+        };
 
-        /* HÀM QUẢN LÝ DỊCH VỤ */
-        function renderServicesTableSettings() {
-            const list = getServicesList();
+        window.renderServicesTableSettings = function() {
+            const list = window.getServicesList();
             const tbody = document.getElementById("services-settings-tbody");
             tbody.innerHTML = list.map((s, idx) => `
                 <tr>
@@ -1069,9 +1067,9 @@
                     </td>
                 </tr>
             `).join('');
-        }
+        };
 
-        async function saveServiceItem() {
+        window.saveServiceItem = async function() {
             const name = document.getElementById("svc-name").value.trim();
             const category = document.getElementById("svc-cat").value;
             const vnd = Number(document.getElementById("svc-vnd").value);
@@ -1080,27 +1078,27 @@
 
             if (!name || vnd <= 0) return alert("Vui lòng nhập tên dịch vụ và giá hợp lệ!");
 
-            if (!SPA_CONFIG.SERVICES) SPA_CONFIG.SERVICES = [...defaultServices];
+            if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = [...window.defaultServices];
 
             const itemData = { category, name, duration, vnd, usd };
 
-            if (editingSvcIndex >= 0) {
-                SPA_CONFIG.SERVICES[editingSvcIndex] = itemData;
+            if (window.editingSvcIndex >= 0) {
+                window.SPA_CONFIG.SERVICES[window.editingSvcIndex] = itemData;
             } else {
-                SPA_CONFIG.SERVICES.push(itemData);
+                window.SPA_CONFIG.SERVICES.push(itemData);
             }
 
-            await window.saveConfigToFirebase(SPA_CONFIG);
-            resetServiceForm();
+            await window.saveConfigToFirebase(window.SPA_CONFIG);
+            window.resetServiceForm();
             alert("Đã lưu dịch vụ lên Firebase Cloud!");
-        }
+        };
 
-        function editServiceItem(idx) {
-            const list = getServicesList();
+        window.editServiceItem = function(idx) {
+            const list = window.getServicesList();
             const item = list[idx];
             if (!item) return;
 
-            editingSvcIndex = idx;
+            window.editingSvcIndex = idx;
             document.getElementById("svc-name").value = item.name;
             document.getElementById("svc-cat").value = item.category;
             document.getElementById("svc-vnd").value = item.vnd;
@@ -1109,82 +1107,82 @@
 
             document.getElementById("btn-save-svc").innerText = "💾 Cập Nhật Dịch Vụ";
             document.getElementById("btn-cancel-svc").style.display = "block";
-        }
+        };
 
-        function resetServiceForm() {
-            editingSvcIndex = -1;
+        window.resetServiceForm = function() {
+            window.editingSvcIndex = -1;
             document.getElementById("svc-name").value = "";
             document.getElementById("svc-vnd").value = "";
             document.getElementById("svc-usd").value = "";
             document.getElementById("svc-duration").value = "";
             document.getElementById("btn-save-svc").innerText = "➕ Thêm / Cập Nhật Dịch Vụ";
             document.getElementById("btn-cancel-svc").style.display = "none";
-        }
+        };
 
-        async function deleteServiceItem(idx) {
+        window.deleteServiceItem = async function(idx) {
             if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này khỏi menu?")) {
-                if (!SPA_CONFIG.SERVICES) SPA_CONFIG.SERVICES = [...defaultServices];
-                SPA_CONFIG.SERVICES.splice(idx, 1);
-                await window.saveConfigToFirebase(SPA_CONFIG);
+                if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = [...window.defaultServices];
+                window.SPA_CONFIG.SERVICES.splice(idx, 1);
+                await window.saveConfigToFirebase(window.SPA_CONFIG);
             }
-        }
+        };
 
-        function renderCategoryEditList() {
+        window.renderCategoryEditList = function() {
             const container = document.getElementById("category-edit-list");
-            container.innerHTML = SPA_CONFIG.CATEGORIES.map((cat, idx) => `
+            container.innerHTML = window.SPA_CONFIG.CATEGORIES.map((cat, idx) => `
                 <div style="display:flex; gap:6px; margin-bottom:6px;">
                     <input type="text" value="${cat}" onchange="updateCategoryName(${idx}, this.value)" style="flex:1; padding:4px 8px; font-size:12px; border:1px solid var(--border-color); border-radius:4px;">
                     <button class="btn-danger" onclick="deleteCategory(${idx})">Xóa</button>
                 </div>
             `).join('');
-        }
+        };
 
-        function updateCategoryName(idx, val) {
+        window.updateCategoryName = function(idx, val) {
             if (val.trim()) {
-                const oldName = SPA_CONFIG.CATEGORIES[idx];
-                SPA_CONFIG.CATEGORIES[idx] = val.trim();
-                const list = getServicesList();
+                const oldName = window.SPA_CONFIG.CATEGORIES[idx];
+                window.SPA_CONFIG.CATEGORIES[idx] = val.trim();
+                const list = window.getServicesList();
                 list.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
-                window.saveConfigToFirebase(SPA_CONFIG);
+                window.saveConfigToFirebase(window.SPA_CONFIG);
             }
-        }
+        };
 
-        function addNewCategory() {
+        window.addNewCategory = function() {
             const val = document.getElementById("new-cat-name").value.trim();
-            if (val && !SPA_CONFIG.CATEGORIES.includes(val)) {
-                SPA_CONFIG.CATEGORIES.push(val);
+            if (val && !window.SPA_CONFIG.CATEGORIES.includes(val)) {
+                window.SPA_CONFIG.CATEGORIES.push(val);
                 document.getElementById("new-cat-name").value = "";
-                window.saveConfigToFirebase(SPA_CONFIG);
+                window.saveConfigToFirebase(window.SPA_CONFIG);
             }
-        }
+        };
 
-        function deleteCategory(idx) {
+        window.deleteCategory = function(idx) {
             if (confirm("Bạn muốn xóa danh mục này?")) {
-                SPA_CONFIG.CATEGORIES.splice(idx, 1);
-                window.saveConfigToFirebase(SPA_CONFIG);
+                window.SPA_CONFIG.CATEGORIES.splice(idx, 1);
+                window.saveConfigToFirebase(window.SPA_CONFIG);
             }
-        }
+        };
 
-        async function saveSettings() {
-            SPA_CONFIG.NAME = document.getElementById("cfg-spa-name").value;
-            SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
-            SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
-            SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
-            SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
-            SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
-            SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
+        window.saveSettings = async function() {
+            window.SPA_CONFIG.NAME = document.getElementById("cfg-spa-name").value;
+            window.SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
+            window.SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
+            window.SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
+            window.SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
+            window.SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
+            window.SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
 
-            await window.saveConfigToFirebase(SPA_CONFIG);
-            document.getElementById("web-title").innerText = "🪷 " + SPA_CONFIG.NAME;
-            document.getElementById("usd-rate").value = SPA_CONFIG.USD_RATE;
+            await window.saveConfigToFirebase(window.SPA_CONFIG);
+            document.getElementById("web-title").innerText = "🪷 " + window.SPA_CONFIG.NAME;
+            document.getElementById("usd-rate").value = window.SPA_CONFIG.USD_RATE;
             alert("Đã lưu cài đặt lên Firebase đám mây thành công!");
-        }
+        };
 
-        function backupSystemData() {
+        window.backupSystemData = function() {
             const backupObj = {
-                config: SPA_CONFIG,
-                transactions: transactions,
-                expenses: expenses,
+                config: window.SPA_CONFIG,
+                transactions: window.transactions,
+                expenses: window.expenses,
                 exportDate: new Date().toISOString()
             };
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupObj));
@@ -1194,9 +1192,9 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
-        }
+        };
 
-        function restoreSystemData(event) {
+        window.restoreSystemData = function(event) {
             const fileReader = new FileReader();
             fileReader.onload = async function(e) {
                 try {
@@ -1214,20 +1212,20 @@
                 }
             };
             fileReader.readAsText(event.target.files[0]);
-        }
+        };
 
-        function clearAllTransactions() {
+        window.clearAllTransactions = function() {
             if(confirm("⚠️ CẢNH BÁO: XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA TRÊN CLOUD?")) {
-                transactions.forEach(t => window.deleteTxFromFirebase(t.id));
-                expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
+                window.transactions.forEach(t => window.deleteTxFromFirebase(t.id));
+                window.expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
                 alert("Đã xóa sạch dữ liệu trên Firebase!");
             }
-        }
+        };
 
-        function exportReportExcel() {
-            if (filteredCache.length === 0) return alert("Không có dữ liệu!");
+        window.exportReportExcel = function() {
+            if (window.filteredCache.length === 0) return alert("Không có dữ liệu!");
             let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ,Giảm Giá,Hình Thức TT,Thành Tiền VND\n";
-            filteredCache.forEach(t => {
+            window.filteredCache.forEach(t => {
                 const svcs = t.items.map(i => i.name).join(' | ');
                 csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.discount}","${t.paymentMethod}","${t.totalVnd}"\n`;
             });
@@ -1239,9 +1237,9 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        };
 
-        init();
+        window.init();
     </script>
 </body>
 </html>
