@@ -21,7 +21,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; }
         
-        /* SIDEBAR Responsive */
         .sidebar { width: 80px; background: var(--sidebar-bg); color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 15px; gap: 8px; flex-shrink: 0; z-index: 100; }
         .nav-btn { background: none; border: none; color: #94a3b8; font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; padding: 12px 0; transition: all 0.2s; }
         .nav-btn.active, .nav-btn:hover { color: #fff; background: #334155; border-left: 4px solid var(--primary); }
@@ -30,7 +29,6 @@
         .tab-content { flex: 1; display: none; height: 100vh; overflow-y: auto; width: 100%; }
         .tab-content.active { display: flex; }
 
-        /* TAB POS */
         .pos-container { display: flex; width: 100%; height: 100%; }
         .main-panel { flex: 6; display: flex; flex-direction: column; padding: 15px; border-right: 1px solid var(--border-color); overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #fff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -46,11 +44,9 @@
         .service-name { font-weight: 600; font-size: 12px; margin-bottom: 6px; line-height: 1.3; }
         .service-price { font-weight: 700; color: var(--primary); font-size: 13px; display: flex; justify-content: space-between; }
 
-        /* HÀNG CHỜ POS */
         .pending-section { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-top: 10px; }
         .pending-title { font-size: 13px; font-weight: 700; color: var(--accent-orange); margin-bottom: 8px; display: flex; justify-content: space-between; }
 
-        /* CART PANEL */
         .cart-panel { flex: 4; background: #fff; display: flex; flex-direction: column; padding: 15px; box-shadow: -2px 0 10px rgba(0,0,0,0.03); overflow-y: auto; }
         .cart-header { font-size: 15px; font-weight: 700; margin-bottom: 10px; border-bottom: 2px solid var(--bg-main); padding-bottom: 6px; color: var(--text-main); }
         
@@ -71,10 +67,11 @@
         .summary-row.total { font-size: 15px; font-weight: 700; color: var(--accent-red); border-top: 1px solid var(--border-color); padding-top: 6px; margin-top: 4px; }
 
         .action-btns { display: flex; gap: 8px; }
-        .pay-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
-        .hold-btn { background: var(--accent-orange); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; }
+        .pay-btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; transition: opacity 0.2s; }
+        .pay-btn:active { opacity: 0.8; }
+        .hold-btn { background: var(--accent-orange); color: white; border: none; padding: 12px; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; flex: 1; transition: opacity 0.2s; }
+        .hold-btn:active { opacity: 0.8; }
 
-        /* COMMON PANEL STYLES */
         .panel-container { flex: 1; padding: 20px; background: #fff; overflow-y: auto; width: 100%; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
         .stat-card { background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; }
@@ -98,7 +95,6 @@
         .btn-success { background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
         .btn-warning { background: var(--accent-orange); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
 
-        /* RESPONSIVE DÀNH CHO ĐIỆN THOẠI (< 768px) */
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
             .sidebar { width: 100%; height: 55px; flex-direction: row; justify-content: space-around; padding-top: 0; border-top: 1px solid var(--border-color); }
@@ -120,7 +116,6 @@
 </head>
 <body>
 
-    <!-- NAV SIDEBAR BAR -->
     <div class="sidebar">
         <button class="nav-btn active" onclick="switchTab('pos-tab', this)"><span>🛒</span> Bán hàng</button>
         <button class="nav-btn" onclick="switchTab('report-tab', this)"><span>📊</span> Báo cáo</button>
@@ -128,7 +123,7 @@
         <button class="nav-btn" onclick="switchTab('settings-tab', this)"><span>⚙️</span> Cài đặt</button>
     </div>
 
-    <!-- TAB 1: BÁN HÀNG POS -->
+    <!-- TAB 1: POS BÁN HÀNG -->
     <div id="pos-tab" class="tab-content active">
         <div class="pos-container">
             <div class="main-panel">
@@ -140,7 +135,6 @@
                 <div class="categories" id="categories-container"></div>
                 <div class="services-grid" id="services-container"></div>
 
-                <!-- KHU VỰC HÀNG CHỜ THANH TOÁN -->
                 <div class="pending-section">
                     <div class="pending-title">
                         <span>⏳ ĐƠN HÀNG ĐANG CHỜ THANH TOÁN</span>
@@ -163,7 +157,6 @@
                 </div>
             </div>
 
-            <!-- FORM BÁN HÀNG / HOÁ ĐƠN -->
             <div class="cart-panel">
                 <div class="cart-header" id="cart-mode-title">HÓA ĐƠN BÁN HÀNG TẠO MỚI</div>
                 
@@ -217,7 +210,7 @@
         </div>
     </div>
 
-    <!-- TAB 2: BÁO CÁO DOANH THU -->
+    <!-- TAB 2: BÁO CÁO -->
     <div id="report-tab" class="tab-content">
         <div class="panel-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
@@ -287,7 +280,7 @@
         </div>
     </div>
 
-    <!-- TAB 3: BÁO CÁO CHI PHÍ KHO -->
+    <!-- TAB 3: BÁO CÁO KHO & GHI SỔ CHI PHÍ -->
     <div id="expense-tab" class="tab-content">
         <div class="panel-container">
             <h2>📦 Quản Lý & Báo Cáo Chi Phí Kho / Vật Tư</h2>
@@ -360,13 +353,60 @@
         </div>
     </div>
 
-    <!-- TAB 4: CÀI ĐẶT DỊCH VỤ, MÃ QR & DỰ PHÒNG -->
+    <!-- TAB 4: CÀI ĐẶT & THÊM/SỬA DỊCH VỤ -->
     <div id="settings-tab" class="tab-content">
-        <div class="panel-container" style="max-width: 750px;">
-            <h2>⚙️ Cài Đặt Hệ Thống & Mã QR Thanh Toán</h2>
+        <div class="panel-container" style="max-width: 850px;">
+            <h2>⚙️ Cài Đặt Hệ Thống, Danh Mục & Dịch Vụ</h2>
             <br>
             
-            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 1. Cấu Hình Mã VietQR Chuyển Khoản Ngân Hàng</h3>
+            <!-- KHU VỰC THÊM/SỬA DỊCH VỤ MỚI BỔ SUNG -->
+            <h3 style="color:var(--primary-dark); font-size:14px; margin-bottom:10px;">💆 Quản Lý & Sửa Menu Dịch Vụ Spa</h3>
+            <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Tên dịch vụ:</label>
+                        <input type="text" id="svc-name" placeholder="VD: Body Massage Tinh Dầu" style="width:100%; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Danh mục:</label>
+                        <select id="svc-cat" style="width:100%; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;"></select>
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Giá tiền (VND):</label>
+                        <input type="number" id="svc-vnd" placeholder="300000" style="width:100%; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Giá USD ($):</label>
+                        <input type="number" id="svc-usd" placeholder="12" style="width:100%; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                    <div style="grid-column: span 2;">
+                        <label style="font-size:11px; font-weight:600;">Thời gian (phút):</label>
+                        <input type="number" id="svc-duration" placeholder="60" style="width:100%; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-success" id="btn-save-svc" style="flex:1; padding:8px;" onclick="saveServiceItem()">➕ Thêm / Cập Nhật Dịch Vụ</button>
+                    <button class="btn-warning" id="btn-cancel-svc" style="display:none;" onclick="resetServiceForm()">Hủy Sửa</button>
+                </div>
+
+                <div class="table-responsive" style="margin-top:15px; max-height:220px; overflow-y:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Danh mục</th>
+                                <th>Tên dịch vụ</th>
+                                <th>Thời gian</th>
+                                <th>Giá (VND)</th>
+                                <th>Giá ($)</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-settings-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 Cấu Hình Mã VietQR Chuyển Khoản</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
                 <div style="margin-bottom:8px;">
                     <label style="font-size:11px; font-weight:600;">Ngân hàng:</label>
@@ -382,22 +422,22 @@
                 </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:11px; font-weight:600;">Số Tài Khoản Ngân Hàng:</label>
-                    <input type="text" id="cfg-bank-acc" placeholder="VD: 0987654321" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                    <input type="text" id="cfg-bank-acc" placeholder="VD: 0856112789" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
                 </div>
                 <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:600;">Tên Chủ Tài Khoản (Viết hoa không dấu):</label>
-                    <input type="text" id="cfg-bank-name" placeholder="VD: NGUYEN VAN A" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                    <label style="font-size:11px; font-weight:600;">Tên Chủ Tài Khoản:</label>
+                    <input type="text" id="cfg-bank-name" placeholder="VD: SEN LOTUS SPA" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
                 </div>
             </div>
 
-            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏷️ 2. Quản Lý / Đổi Tên Danh Mục Bán Hàng</h3>
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏷️ Quản Lý Danh Mục Bán Hàng</h3>
             <div style="display:flex; gap:6px; margin-bottom:10px;">
                 <input type="text" id="new-cat-name" placeholder="Tên danh mục mới..." style="flex:1; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
                 <button class="btn-success" onclick="addNewCategory()">Thêm Danh Mục</button>
             </div>
             <div id="category-edit-list" style="margin-bottom:20px; background:var(--bg-main); padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
 
-            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏪 3. Thông tin Spa (In trên Hóa đơn)</h3>
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏪 Thông tin Spa (In trên Hóa đơn)</h3>
             <div style="margin-bottom:8px;">
                 <label style="font-size:11px; font-weight:600;">Tên Thương Hiệu Spa:</label>
                 <input type="text" id="cfg-spa-name" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
@@ -418,29 +458,26 @@
             <button class="pay-btn" style="width:100%; margin-bottom:25px;" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
             <hr><br>
 
-            <h3 style="color:var(--accent-orange); font-size:13px; margin-bottom:10px;">🛡️ 4. Sao Lưu Dự Phòng & Khôi Phục Dữ Liệu</h3>
-            <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Xuất bản sao lưu dữ liệu thường xuyên để bảo vệ dữ liệu hóa đơn.</p>
+            <h3 style="color:var(--accent-orange); font-size:13px; margin-bottom:10px;">🛡️ Sao Lưu Dự Phòng & Khôi Phục Dữ Liệu</h3>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button class="btn-excel" style="flex:1;" onclick="backupSystemData()">💾 Xuất File Sao Lưu (JSON)</button>
                 <button class="btn-warning" style="flex:1;" onclick="document.getElementById('restore-file-input').click()">📂 Nhập File Khôi Phục</button>
                 <input type="file" id="restore-file-input" style="display:none;" accept=".json" onchange="restoreSystemData(event)">
             </div>
 
-            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:5px;">⚠️ 5. Xóa Sạch Dữ Liệu</h3>
+            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:5px;">⚠️ Xóa Sạch Dữ Liệu</h3>
             <button class="btn-danger" style="width:100%; padding:10px; font-size:11px;" onclick="clearAllTransactions()">🗑️ XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA</button>
         </div>
     </div>
 
     <div id="print-area" style="display: none;"></div>
 
-    <!-- TÍCH HỢP FIREBASE FIRESTORE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
             getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Cấu hình Firebase chính xác của dự án sensapalc
         const firebaseConfig = {
             apiKey: "AIzaSyDHsbApklWdjlRT-PP1cKDLzUPyxou8BWo",
             authDomain: "sensapalc.firebaseapp.com",
@@ -454,10 +491,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC TỪ FIREBASE CLOUD
         onSnapshot(doc(db, "spa_store", "config"), (docSnap) => {
             if (docSnap.exists()) {
                 window.SPA_CONFIG = docSnap.data();
+                if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = defaultServices;
                 loadSettingsToUI();
                 renderCategories();
                 renderServices();
@@ -479,29 +516,27 @@
             updateExpenseUI();
         });
 
-        // Hàm tương tác CSDL công khai cho script
-        window.saveTxToFirebase = async (tx) => {
-            await setDoc(doc(db, "spa_transactions", tx.id), tx);
-        };
-
-        window.deleteTxFromFirebase = async (txId) => {
-            await deleteDoc(doc(db, "spa_transactions", txId));
-        };
-
-        window.saveExpenseToFirebase = async (exp) => {
-            await setDoc(doc(db, "spa_expenses", exp.id), exp);
-        };
-
-        window.deleteExpenseFromFirebase = async (expId) => {
-            await deleteDoc(doc(db, "spa_expenses", expId));
-        };
-
-        window.saveConfigToFirebase = async (config) => {
-            await setDoc(doc(db, "spa_store", "config"), config);
-        };
+        window.saveTxToFirebase = async (tx) => { await setDoc(doc(db, "spa_transactions", tx.id), tx); };
+        window.deleteTxFromFirebase = async (txId) => { await deleteDoc(doc(db, "spa_transactions", txId)); };
+        window.saveExpenseToFirebase = async (exp) => { await setDoc(doc(db, "spa_expenses", exp.id), exp); };
+        window.deleteExpenseFromFirebase = async (expId) => { await deleteDoc(doc(db, "spa_expenses", expId)); };
+        window.saveConfigToFirebase = async (config) => { await setDoc(doc(db, "spa_store", "config"), config); };
     </script>
 
     <script>
+        const defaultServices = [
+            { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
+            { category: "Tắm & Xông Hơi", name: "Sauna (Xông hơi khoang)", duration: 30, vnd: 150000, usd: 6 },
+            { category: "Tắm & Xông Hơi", name: "Himalayan Salt Sauna (Xông hơi đá muối)", duration: 30, vnd: 200000, usd: 8 },
+            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân 30P", duration: 30, vnd: 150000, usd: 6 },
+            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân 60P", duration: 60, vnd: 250000, usd: 10 },
+            { category: "Body Massage", name: "Body Massage + Tinh dầu Aroma", duration: 60, vnd: 300000, usd: 12 },
+            { category: "Body Massage", name: "Body Massage + Đá nóng (Hot Stone)", duration: 60, vnd: 400000, usd: 16 },
+            { category: "Combo Body", name: "Combo Tắm lá + Xông hơi + Đá muối", duration: 60, vnd: 700000, usd: 28 },
+            { category: "Nail Care", name: "Manicure (Cắt nhặt móng tay)", duration: 30, vnd: 150000, usd: 6 },
+            { category: "Gội Đầu & Skincare", name: "Gội đầu dưỡng sinh (Scalp Care)", duration: 45, vnd: 250000, usd: 10 }
+        ];
+
         let SPA_CONFIG = {
             NAME: "SEN LOTUS HARMONY SPA & RETREAT",
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
@@ -510,24 +545,13 @@
             BANK_ID: "MB",
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
-            CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"]
+            CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"],
+            SERVICES: [...defaultServices]
         };
-
-        const menuData = [
-            { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Tắm & Xông Hơi", name: "Sauna (Xông hơi khoang)", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Tắm & Xông Hơi", name: "Himalayan Salt Sauna (Xông hơi đá muối)", duration: 30, vnd: 200000, usd: 8 },
-            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Massage Đầu/Cổ/Vai/Chân", name: "Massage Đầu, Cổ, Vai, Gáy, Chân", duration: 60, vnd: 250000, usd: 10 },
-            { category: "Body Massage", name: "Body Massage + Tinh dầu Aroma", duration: 60, vnd: 300000, usd: 12 },
-            { category: "Body Massage", name: "Body Massage + Đá nóng (Hot Stone)", duration: 60, vnd: 400000, usd: 16 },
-            { category: "Combo Body", name: "Combo Tắm lá + Xông hơi + Đá muối", duration: 60, vnd: 700000, usd: 28 },
-            { category: "Nail Care", name: "Manicure (Cắt nhặt móng tay)", duration: 30, vnd: 150000, usd: 6 },
-            { category: "Gội Đầu & Skincare", name: "Gội đầu dưỡng sinh (Scalp Care)", duration: 45, vnd: 250000, usd: 10 }
-        ];
 
         let cart = [];
         let editingTxId = null;
+        let editingSvcIndex = -1;
         let currentCategory = "Tất cả";
         let selectedPayment = "Tiền mặt";
         let transactions = [];
@@ -575,6 +599,11 @@
             document.getElementById("categories-container").innerHTML = categories.map(cat => 
                 `<button class="cat-btn ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`
             ).join('');
+
+            const svcSelect = document.getElementById("svc-cat");
+            if (svcSelect) {
+                svcSelect.innerHTML = SPA_CONFIG.CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+            }
         }
 
         function filterCategory(cat) {
@@ -583,28 +612,36 @@
             renderServices();
         }
 
+        function getServicesList() {
+            return SPA_CONFIG.SERVICES && SPA_CONFIG.SERVICES.length > 0 ? SPA_CONFIG.SERVICES : defaultServices;
+        }
+
         function renderServices() {
-            const filtered = currentCategory === "Tất cả" ? menuData : menuData.filter(item => item.category === currentCategory);
-            document.getElementById("services-container").innerHTML = filtered.map((item, index) => `
-                <div class="service-card" onclick="addToCartByIndex(${index})">
+            const list = getServicesList();
+            const filtered = currentCategory === "Tất cả" ? list : list.filter(item => item.category === currentCategory);
+            
+            document.getElementById("services-container").innerHTML = filtered.map((item) => `
+                <div class="service-card" onclick="addToCartByItem('${item.name}')">
                     <div class="service-name">${item.name}</div>
                     <div style="font-size:10px; color:#64748b;">⏱️ ${item.duration} phút</div>
                     <div class="service-price">
-                        <span>${item.vnd.toLocaleString()} đ</span>
+                        <span>${Number(item.vnd).toLocaleString()} đ</span>
                         <span style="color:#2563eb;">$${item.usd}</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        function addToCartByIndex(index) {
-            const filtered = currentCategory === "Tất cả" ? menuData : menuData.filter(item => item.category === currentCategory);
-            const item = filtered[index];
+        function addToCartByItem(name) {
+            const list = getServicesList();
+            const item = list.find(s => s.name === name);
+            if (!item) return;
+
             cart.push({
                 id: Date.now() + Math.random(),
                 name: item.name,
                 duration: item.duration,
-                vnd: item.vnd,
+                vnd: Number(item.vnd),
                 ktvType: "Nội bộ",
                 ktvName: "",
                 ktvExtFee: 0
@@ -658,7 +695,7 @@
                 `).join('');
             }
 
-            const subTotal = cart.reduce((sum, i) => sum + i.vnd, 0);
+            const subTotal = cart.reduce((sum, i) => sum + Number(i.vnd), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
@@ -672,7 +709,7 @@
         async function saveTransaction(status) {
             if (cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
-            const subTotal = cart.reduce((sum, i) => sum + i.vnd, 0);
+            const subTotal = cart.reduce((sum, i) => sum + Number(i.vnd), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
             const totalKtvExtFee = cart.reduce((sum, i) => sum + (i.ktvType === 'KTV Ngoài' ? Number(i.ktvExtFee || 0) : 0), 0);
@@ -710,7 +747,7 @@
             if (status === 'Hoàn thành') {
                 printThermalBill(tx, subTotal);
             } else {
-                alert("Đã lưu hóa đơn lên đám mây thành công!");
+                alert("Đã lưu hàng chờ thanh toán lên Firebase Cloud!");
             }
 
             resetCartForm();
@@ -815,7 +852,7 @@
                     <div><b>${i.name}</b> (${i.duration}p)</div>
                     <div style="display:flex; justify-content:space-between; font-size:9px;">
                         <span>KTV: ${i.ktvName || 'N/A'}</span>
-                        <span>${i.vnd.toLocaleString()} đ</span>
+                        <span>${Number(i.vnd).toLocaleString()} đ</span>
                     </div>
                 `).join('')}
                 <p>--------------------------------</p>
@@ -949,7 +986,7 @@
             const name = document.getElementById("exp-name").value;
             const amount = Number(document.getElementById("exp-amount").value) || 0;
 
-            if (!name || amount <= 0) return alert("Vui lòng điền đủ thông tin vật tư!");
+            if (!name || amount <= 0) return alert("Vui lòng điền đủ tên vật tư và số tiền!");
 
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -967,6 +1004,7 @@
             await window.saveExpenseToFirebase(exp);
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
+            alert("Đã ghi sổ chi phí kho thành công!");
         }
 
         function updateExpenseUI() {
@@ -1011,6 +1049,84 @@
             document.getElementById("cfg-bank-acc").value = SPA_CONFIG.BANK_ACC || "";
             document.getElementById("cfg-bank-name").value = SPA_CONFIG.BANK_NAME || "";
             renderCategoryEditList();
+            renderServicesTableSettings();
+        }
+
+        /* HÀM QUẢN LÝ DỊCH VỤ */
+        function renderServicesTableSettings() {
+            const list = getServicesList();
+            const tbody = document.getElementById("services-settings-tbody");
+            tbody.innerHTML = list.map((s, idx) => `
+                <tr>
+                    <td><b>${s.category}</b></td>
+                    <td>${s.name}</td>
+                    <td>${s.duration}p</td>
+                    <td>${Number(s.vnd).toLocaleString()} đ</td>
+                    <td>$${s.usd}</td>
+                    <td>
+                        <button class="btn-warning" onclick="editServiceItem(${idx})">Sửa</button>
+                        <button class="btn-danger" onclick="deleteServiceItem(${idx})">Xóa</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function saveServiceItem() {
+            const name = document.getElementById("svc-name").value.trim();
+            const category = document.getElementById("svc-cat").value;
+            const vnd = Number(document.getElementById("svc-vnd").value);
+            const usd = Number(document.getElementById("svc-usd").value) || 0;
+            const duration = Number(document.getElementById("svc-duration").value) || 30;
+
+            if (!name || vnd <= 0) return alert("Vui lòng nhập tên dịch vụ và giá hợp lệ!");
+
+            if (!SPA_CONFIG.SERVICES) SPA_CONFIG.SERVICES = [...defaultServices];
+
+            const itemData = { category, name, duration, vnd, usd };
+
+            if (editingSvcIndex >= 0) {
+                SPA_CONFIG.SERVICES[editingSvcIndex] = itemData;
+            } else {
+                SPA_CONFIG.SERVICES.push(itemData);
+            }
+
+            await window.saveConfigToFirebase(SPA_CONFIG);
+            resetServiceForm();
+            alert("Đã lưu dịch vụ lên Firebase Cloud!");
+        }
+
+        function editServiceItem(idx) {
+            const list = getServicesList();
+            const item = list[idx];
+            if (!item) return;
+
+            editingSvcIndex = idx;
+            document.getElementById("svc-name").value = item.name;
+            document.getElementById("svc-cat").value = item.category;
+            document.getElementById("svc-vnd").value = item.vnd;
+            document.getElementById("svc-usd").value = item.usd;
+            document.getElementById("svc-duration").value = item.duration;
+
+            document.getElementById("btn-save-svc").innerText = "💾 Cập Nhật Dịch Vụ";
+            document.getElementById("btn-cancel-svc").style.display = "block";
+        }
+
+        function resetServiceForm() {
+            editingSvcIndex = -1;
+            document.getElementById("svc-name").value = "";
+            document.getElementById("svc-vnd").value = "";
+            document.getElementById("svc-usd").value = "";
+            document.getElementById("svc-duration").value = "";
+            document.getElementById("btn-save-svc").innerText = "➕ Thêm / Cập Nhật Dịch Vụ";
+            document.getElementById("btn-cancel-svc").style.display = "none";
+        }
+
+        async function deleteServiceItem(idx) {
+            if (confirm("Bạn có chắc chắn muốn xóa dịch vụ này khỏi menu?")) {
+                if (!SPA_CONFIG.SERVICES) SPA_CONFIG.SERVICES = [...defaultServices];
+                SPA_CONFIG.SERVICES.splice(idx, 1);
+                await window.saveConfigToFirebase(SPA_CONFIG);
+            }
         }
 
         function renderCategoryEditList() {
@@ -1027,7 +1143,8 @@
             if (val.trim()) {
                 const oldName = SPA_CONFIG.CATEGORIES[idx];
                 SPA_CONFIG.CATEGORIES[idx] = val.trim();
-                menuData.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
+                const list = getServicesList();
+                list.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
                 window.saveConfigToFirebase(SPA_CONFIG);
             }
         }
