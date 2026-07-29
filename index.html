@@ -366,7 +366,6 @@
             <h2>⚙️ Cài Đặt Hệ Thống & Mã QR Thanh Toán</h2>
             <br>
             
-            <!-- 1. CÀI ĐẶT MÃ QR THANH TOÁN VIETQR -->
             <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 1. Cấu Hình Mã VietQR Chuyển Khoản Ngân Hàng</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
                 <div style="margin-bottom:8px;">
@@ -391,7 +390,6 @@
                 </div>
             </div>
 
-            <!-- 2. QUẢN LÝ DANH MỤC BÁN HÀNG -->
             <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏷️ 2. Quản Lý / Đổi Tên Danh Mục Bán Hàng</h3>
             <div style="display:flex; gap:6px; margin-bottom:10px;">
                 <input type="text" id="new-cat-name" placeholder="Tên danh mục mới..." style="flex:1; padding:6px; font-size:12px; border:1px solid var(--border-color); border-radius:6px;">
@@ -399,7 +397,6 @@
             </div>
             <div id="category-edit-list" style="margin-bottom:20px; background:var(--bg-main); padding:10px; border-radius:8px; border:1px solid var(--border-color);"></div>
 
-            <!-- 3. THÔNG TIN CỬA HÀNG -->
             <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🏪 3. Thông tin Spa (In trên Hóa đơn)</h3>
             <div style="margin-bottom:8px;">
                 <label style="font-size:11px; font-weight:600;">Tên Thương Hiệu Spa:</label>
@@ -421,9 +418,8 @@
             <button class="pay-btn" style="width:100%; margin-bottom:25px;" onclick="saveSettings()">💾 LƯU TẤT CẢ CÀI ĐẶT</button>
             <hr><br>
 
-            <!-- 4. GIẢI PHÁP AN TOÀN DỮ LIỆU & BẢO TRÌ DỰ PHÒNG -->
             <h3 style="color:var(--accent-orange); font-size:13px; margin-bottom:10px;">🛡️ 4. Sao Lưu Dự Phòng & Khôi Phục Dữ Liệu</h3>
-            <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Xuất bản sao lưu dữ liệu thường xuyên để bảo vệ dữ liệu hóa đơn, tránh sự cố mất dữ liệu khi trình duyệt hoặc máy tính bị lỗi.</p>
+            <p style="font-size:11px; color:#64748b; margin-bottom:10px;">Xuất bản sao lưu dữ liệu thường xuyên để bảo vệ dữ liệu hóa đơn.</p>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button class="btn-excel" style="flex:1;" onclick="backupSystemData()">💾 Xuất File Sao Lưu (JSON)</button>
                 <button class="btn-warning" style="flex:1;" onclick="document.getElementById('restore-file-input').click()">📂 Nhập File Khôi Phục</button>
@@ -437,19 +433,76 @@
 
     <div id="print-area" style="display: none;"></div>
 
-    <script>
-        // BẢO VỆ DỮ LIỆU BAN ĐẦU
-        function safeGetJSON(key, defaultVal) {
-            try {
-                const item = localStorage.getItem(key);
-                return item ? JSON.parse(item) : defaultVal;
-            } catch (e) {
-                console.error("Lỗi đọc dữ liệu từ localStorage, sử dụng giá trị mặc định", e);
-                return defaultVal;
-            }
-        }
+    <!-- TÍCH HỢP FIREBASE FIRESTORE SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        let SPA_CONFIG = safeGetJSON('spa_config_v5', {
+        // Cấu hình Firebase chính xác của dự án sensapalc
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHsbApklWdjlRT-PP1cKDLzUPyxou8BWo",
+            authDomain: "sensapalc.firebaseapp.com",
+            projectId: "sensapalc",
+            storageBucket: "sensapalc.firebasestorage.app",
+            messagingSenderId: "660816337736",
+            appId: "1:660816337736:web:5996ae9dab23429455317d",
+            measurementId: "G-ETH4NH0R8D"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // LẮNG NGHE DỮ LIỆU THỜI GIAN THỰC TỪ FIREBASE CLOUD
+        onSnapshot(doc(db, "spa_store", "config"), (docSnap) => {
+            if (docSnap.exists()) {
+                window.SPA_CONFIG = docSnap.data();
+                loadSettingsToUI();
+                renderCategories();
+                renderServices();
+            }
+        });
+
+        onSnapshot(collection(db, "spa_transactions"), (snapshot) => {
+            window.transactions = [];
+            snapshot.forEach((doc) => window.transactions.push(doc.data()));
+            window.transactions.sort((a, b) => b.timestamp - a.timestamp);
+            renderPendingTransactionsPOS();
+            updateReportUI();
+        });
+
+        onSnapshot(collection(db, "spa_expenses"), (snapshot) => {
+            window.expenses = [];
+            snapshot.forEach((doc) => window.expenses.push(doc.data()));
+            window.expenses.sort((a, b) => b.timestamp - a.timestamp);
+            updateExpenseUI();
+        });
+
+        // Hàm tương tác CSDL công khai cho script
+        window.saveTxToFirebase = async (tx) => {
+            await setDoc(doc(db, "spa_transactions", tx.id), tx);
+        };
+
+        window.deleteTxFromFirebase = async (txId) => {
+            await deleteDoc(doc(db, "spa_transactions", txId));
+        };
+
+        window.saveExpenseToFirebase = async (exp) => {
+            await setDoc(doc(db, "spa_expenses", exp.id), exp);
+        };
+
+        window.deleteExpenseFromFirebase = async (expId) => {
+            await deleteDoc(doc(db, "spa_expenses", expId));
+        };
+
+        window.saveConfigToFirebase = async (config) => {
+            await setDoc(doc(db, "spa_store", "config"), config);
+        };
+    </script>
+
+    <script>
+        let SPA_CONFIG = {
             NAME: "SEN LOTUS HARMONY SPA & RETREAT",
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
@@ -458,7 +511,7 @@
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
             CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"]
-        });
+        };
 
         const menuData = [
             { category: "Tắm & Xông Hơi", name: "Red Dao's Herbal Bath (Tắm lá thuốc Dao đỏ)", duration: 30, vnd: 150000, usd: 6 },
@@ -477,8 +530,8 @@
         let editingTxId = null;
         let currentCategory = "Tất cả";
         let selectedPayment = "Tiền mặt";
-        let transactions = safeGetJSON('spa_transactions_v5', []);
-        let expenses = safeGetJSON('spa_expenses_v5', []);
+        let transactions = [];
+        let expenses = [];
         let filteredCache = [];
 
         function init() {
@@ -503,12 +556,8 @@
                 expYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
             }
 
-            loadSettingsToUI();
             renderCategories();
             renderServices();
-            renderPendingTransactionsPOS();
-            updateReportUI();
-            updateExpenseUI();
         }
 
         function switchTab(tabId, btn) {
@@ -620,7 +669,7 @@
             document.getElementById("total-usd").innerText = '$' + (totalVnd / rate).toFixed(1);
         }
 
-        function saveTransaction(status) {
+        async function saveTransaction(status) {
             if (cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
             const subTotal = cart.reduce((sum, i) => sum + i.vnd, 0);
@@ -636,54 +685,35 @@
 
             const hdvName = document.getElementById("cust-hdv").value.trim();
 
-            let tx;
-            if (editingTxId) {
-                tx = transactions.find(t => t.id === editingTxId);
-                tx.status = status;
-                tx.customer = document.getElementById("cust-name").value || "Khách lẻ";
-                tx.nation = document.getElementById("cust-nation").value || "Việt Nam";
-                tx.hdv = hdvName;
-                tx.hdvCommission = hdvName ? (totalVnd * 0.3) : 0;
-                tx.room = document.getElementById("cust-room").value;
-                tx.items = [...cart];
-                tx.discount = discount;
-                tx.totalKtvExtFee = totalKtvExtFee;
-                tx.paymentMethod = selectedPayment;
-                tx.totalVnd = totalVnd;
-                tx.totalUsd = (totalVnd / rate).toFixed(1);
-                tx.note = document.getElementById("cart-note").value;
-            } else {
-                tx = {
-                    id: 'HD' + Date.now().toString().slice(-6),
-                    status: status,
-                    isoDate: `${yyyy}-${mm}-${dd}`,
-                    createdTime: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
-                    customer: document.getElementById("cust-name").value || "Khách lẻ",
-                    nation: document.getElementById("cust-nation").value || "Việt Nam",
-                    hdv: hdvName,
-                    hdvCommission: hdvName ? (totalVnd * 0.3) : 0,
-                    room: document.getElementById("cust-room").value,
-                    items: [...cart],
-                    discount: discount,
-                    totalKtvExtFee: totalKtvExtFee,
-                    paymentMethod: selectedPayment,
-                    totalVnd: totalVnd,
-                    totalUsd: (totalVnd / rate).toFixed(1),
-                    note: document.getElementById("cart-note").value
-                };
-                transactions.unshift(tx);
-            }
+            const tx = {
+                id: editingTxId || ('HD' + Date.now().toString().slice(-6)),
+                timestamp: Date.now(),
+                status: status,
+                isoDate: `${yyyy}-${mm}-${dd}`,
+                createdTime: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
+                customer: document.getElementById("cust-name").value || "Khách lẻ",
+                nation: document.getElementById("cust-nation").value || "Việt Nam",
+                hdv: hdvName,
+                hdvCommission: hdvName ? (totalVnd * 0.3) : 0,
+                room: document.getElementById("cust-room").value,
+                items: [...cart],
+                discount: discount,
+                totalKtvExtFee: totalKtvExtFee,
+                paymentMethod: selectedPayment,
+                totalVnd: totalVnd,
+                totalUsd: (totalVnd / rate).toFixed(1),
+                note: document.getElementById("cart-note").value
+            };
 
-            localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
+            await window.saveTxToFirebase(tx);
 
             if (status === 'Hoàn thành') {
                 printThermalBill(tx, subTotal);
             } else {
-                alert("Đã lưu hóa đơn vào HÀNG CHỜ!");
+                alert("Đã lưu hóa đơn lên đám mây thành công!");
             }
 
             resetCartForm();
-            renderPendingTransactionsPOS();
         }
 
         function resetCartForm() {
@@ -743,23 +773,19 @@
             }
         }
 
-        function markAsPaid(txId) {
+        async function markAsPaid(txId) {
             const tx = transactions.find(t => t.id === txId);
             if (tx) {
                 tx.status = 'Hoàn thành';
-                localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
+                await window.saveTxToFirebase(tx);
                 if (editingTxId === txId) resetCartForm();
-                renderPendingTransactionsPOS();
-                updateReportUI();
                 alert(`Đã thanh toán thành công hóa đơn ${txId}!`);
             }
         }
 
-        // TẠO VIETQR TỰ ĐỘNG VÀ IN BILL
         function printThermalBill(tx, subTotal) {
             const printArea = document.getElementById("print-area");
 
-            // Kiểm tra xem hóa đơn có dùng QR / Chuyển khoản không để tạo mã VietQR động
             let qrImageHtml = '';
             if ((tx.paymentMethod === 'QR Code' || tx.paymentMethod === 'Chuyển khoản') && SPA_CONFIG.BANK_ACC) {
                 const qrUrl = `https://img.vietqr.io/image/${SPA_CONFIG.BANK_ID}-${SPA_CONFIG.BANK_ACC}-compact2.png?amount=${tx.totalVnd}&addInfo=${encodeURIComponent(tx.id + ' Thanh toan Spa')}&accountName=${encodeURIComponent(SPA_CONFIG.BANK_NAME || '')}`;
@@ -805,7 +831,6 @@
             printArea.style.display = "none";
         }
 
-        // BÁO CÁO DOANH THU & KHO
         function toggleFilterInputs() {
             const m = document.getElementById("report-mode").value;
             document.getElementById("group-filter-date").style.display = m === 'day' ? 'block' : 'none';
@@ -893,7 +918,6 @@
             const tbody = document.getElementById("history-table-body");
             tbody.innerHTML = filteredCache.map((t) => {
                 const isPending = t.status === 'Chờ thanh toán';
-                const originalIndex = transactions.findIndex(orig => orig.id === t.id);
                 return `
                     <tr>
                         <td><b>${t.id}</b></td>
@@ -907,23 +931,20 @@
                         <td>
                             <button class="btn-warning" onclick="switchTab('pos-tab', document.querySelectorAll('.nav-btn')[0]); editTransaction('${t.id}');">Sửa</button>
                             ${isPending ? `<button class="btn-success" onclick="markAsPaid('${t.id}')">TT</button>` : ''}
-                            <button class="btn-danger" onclick="deleteTx(${originalIndex})">Xóa</button>
+                            <button class="btn-danger" onclick="deleteTx('${t.id}')">Xóa</button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function deleteTx(index) {
-            if(confirm("Xóa hóa đơn này khỏi lịch sử?")) {
-                transactions.splice(index, 1);
-                localStorage.setItem('spa_transactions_v5', JSON.stringify(transactions));
-                updateReportUI();
-                renderPendingTransactionsPOS();
+        async function deleteTx(txId) {
+            if(confirm("Xóa hóa đơn này khỏi CSDL Cloud?")) {
+                await window.deleteTxFromFirebase(txId);
             }
         }
 
-        function addExpense() {
+        async function addExpense() {
             const category = document.getElementById("exp-category").value;
             const name = document.getElementById("exp-name").value;
             const amount = Number(document.getElementById("exp-amount").value) || 0;
@@ -935,16 +956,17 @@
             const mm = String(now.getMonth() + 1).padStart(2, '0');
             const dd = String(now.getDate()).padStart(2, '0');
 
-            expenses.unshift({
+            const exp = {
+                id: 'EXP' + Date.now().toString().slice(-6),
+                timestamp: Date.now(),
                 isoDate: `${yyyy}-${mm}-${dd}`,
                 time: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
                 category, name, amount
-            });
+            };
 
-            localStorage.setItem('spa_expenses_v5', JSON.stringify(expenses));
+            await window.saveExpenseToFirebase(exp);
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
-            updateExpenseUI();
         }
 
         function updateExpenseUI() {
@@ -976,13 +998,10 @@
 
         function clearAllExpenses() {
             if(confirm("Xóa toàn bộ sổ chi phí kho?")) {
-                expenses = [];
-                localStorage.removeItem('spa_expenses_v5');
-                updateExpenseUI();
+                expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
             }
         }
 
-        // CÀI ĐẶT HỆ THỐNG
         function loadSettingsToUI() {
             document.getElementById("cfg-spa-name").value = SPA_CONFIG.NAME;
             document.getElementById("cfg-spa-address").value = SPA_CONFIG.ADDRESS;
@@ -1009,7 +1028,7 @@
                 const oldName = SPA_CONFIG.CATEGORIES[idx];
                 SPA_CONFIG.CATEGORIES[idx] = val.trim();
                 menuData.forEach(m => { if (m.category === oldName) m.category = val.trim(); });
-                saveConfig();
+                window.saveConfigToFirebase(SPA_CONFIG);
             }
         }
 
@@ -1018,26 +1037,18 @@
             if (val && !SPA_CONFIG.CATEGORIES.includes(val)) {
                 SPA_CONFIG.CATEGORIES.push(val);
                 document.getElementById("new-cat-name").value = "";
-                saveConfig();
-                renderCategoryEditList();
+                window.saveConfigToFirebase(SPA_CONFIG);
             }
         }
 
         function deleteCategory(idx) {
             if (confirm("Bạn muốn xóa danh mục này?")) {
                 SPA_CONFIG.CATEGORIES.splice(idx, 1);
-                saveConfig();
-                renderCategoryEditList();
+                window.saveConfigToFirebase(SPA_CONFIG);
             }
         }
 
-        function saveConfig() {
-            localStorage.setItem('spa_config_v5', JSON.stringify(SPA_CONFIG));
-            renderCategories();
-            renderServices();
-        }
-
-        function saveSettings() {
+        async function saveSettings() {
             SPA_CONFIG.NAME = document.getElementById("cfg-spa-name").value;
             SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
             SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
@@ -1046,13 +1057,12 @@
             SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
             SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
 
-            saveConfig();
+            await window.saveConfigToFirebase(SPA_CONFIG);
             document.getElementById("web-title").innerText = "🪷 " + SPA_CONFIG.NAME;
             document.getElementById("usd-rate").value = SPA_CONFIG.USD_RATE;
-            alert("Đã lưu cài đặt thành công!");
+            alert("Đã lưu cài đặt lên Firebase đám mây thành công!");
         }
 
-        // TÍNH NĂNG DỰ PHÒNG DỮ LIỆU (BACKUP & RESTORE)
         function backupSystemData() {
             const backupObj = {
                 config: SPA_CONFIG,
@@ -1071,15 +1081,14 @@
 
         function restoreSystemData(event) {
             const fileReader = new FileReader();
-            fileReader.onload = function(e) {
+            fileReader.onload = async function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
                     if (data.config && data.transactions && data.expenses) {
-                        localStorage.setItem('spa_config_v5', JSON.stringify(data.config));
-                        localStorage.setItem('spa_transactions_v5', JSON.stringify(data.transactions));
-                        localStorage.setItem('spa_expenses_v5', JSON.stringify(data.expenses));
-                        alert("Khôi phục dữ liệu thành công! Trang web sẽ tự động làm mới.");
-                        location.reload();
+                        await window.saveConfigToFirebase(data.config);
+                        for (let t of data.transactions) await window.saveTxToFirebase(t);
+                        for (let exp of data.expenses) await window.saveExpenseToFirebase(exp);
+                        alert("Đã khôi phục dữ liệu lên Firebase thành công!");
                     } else {
                         alert("File sao lưu không đúng định dạng!");
                     }
@@ -1091,14 +1100,10 @@
         }
 
         function clearAllTransactions() {
-            if(confirm("⚠️ CẢNH BÁO: XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA?")) {
-                transactions = []; expenses = [];
-                localStorage.removeItem('spa_transactions_v5');
-                localStorage.removeItem('spa_expenses_v5');
-                updateReportUI();
-                updateExpenseUI();
-                renderPendingTransactionsPOS();
-                alert("Đã xóa sạch dữ liệu!");
+            if(confirm("⚠️ CẢNH BÁO: XÓA TOÀN BỘ LỊCH SỬ DỮ LIỆU SPA TRÊN CLOUD?")) {
+                transactions.forEach(t => window.deleteTxFromFirebase(t.id));
+                expenses.forEach(e => window.deleteExpenseFromFirebase(e.id));
+                alert("Đã xóa sạch dữ liệu trên Firebase!");
             }
         }
 
