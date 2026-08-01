@@ -53,9 +53,9 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--bg-main); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); }
         .form-grid input, .form-grid select { padding: 7px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 6px; width: 100%; outline: none; background: #fff; }
 
-        .cart-items { flex: 1; overflow-y: auto; margin-bottom: 10px; min-height: 120px; max-height: 250px; }
+        .cart-items { flex: 1; overflow-y: auto; margin-bottom: 10px; min-height: 120px; max-height: 280px; }
         .cart-item { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; }
-        .cart-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 4px; }
+        .cart-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 4px; flex-wrap: wrap; }
         .input-inline { padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 11px; background: #fff; }
         
         .payment-options { display: flex; gap: 6px; margin-bottom: 10px; }
@@ -395,6 +395,30 @@
             <h2>⚙️ Cài Đặt Hệ Thống, Danh Mục & Dịch Vụ</h2>
             <br>
             
+            <!-- THÊM MỚI: CẤU HÌNH MÀU GIAO DIỆN -->
+            <h3 style="color:var(--primary-dark); font-size:13px; margin-bottom:10px;">🎨 Chỉnh Sửa Màu Giao Diện</h3>
+            <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Màu Chủ Đạo (Primary):</label>
+                        <input type="color" id="cfg-theme-primary" value="#10b981" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Màu Thanh Bên (Sidebar):</label>
+                        <input type="color" id="cfg-theme-sidebar" value="#1e293b" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Màu Nền Nền Chính (Background):</label>
+                        <input type="color" id="cfg-theme-bg" value="#f8fafc" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
+                    </div>
+                    <div>
+                        <label style="font-size:11px; font-weight:600;">Màu Chữ Chính (Text):</label>
+                        <input type="color" id="cfg-theme-text" value="#0f172a" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
+                    </div>
+                </div>
+                <button class="btn-warning" style="width:100%; padding:6px;" onclick="resetDefaultTheme()">🔄 Khôi Phục Màu Mặc Định</button>
+            </div>
+
             <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:10px;">🔐 Đổi Mật Khẩu Admin (PIN)</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
                 <div style="margin-bottom:8px;">
@@ -555,6 +579,10 @@
                 window.SPA_CONFIG = docSnap.data();
                 if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = window.defaultServices;
                 if (!window.SPA_CONFIG.ADMIN_PIN) window.SPA_CONFIG.ADMIN_PIN = "1234";
+                if (!window.SPA_CONFIG.THEME) {
+                    window.SPA_CONFIG.THEME = { primary: "#10b981", sidebar: "#1e293b", bg: "#f8fafc", text: "#0f172a" };
+                }
+                window.applyTheme(window.SPA_CONFIG.THEME);
                 window.loadSettingsToUI();
                 window.renderCategories();
                 window.renderServices();
@@ -606,6 +634,7 @@
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
             ADMIN_PIN: "1234",
+            THEME: { primary: "#10b981", sidebar: "#1e293b", bg: "#f8fafc", text: "#0f172a" },
             CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"],
             SERVICES: [...window.defaultServices]
         };
@@ -619,10 +648,56 @@
         window.expenses = [];
         window.filteredCache = [];
 
-        // QUẢN LÝ TRẠNG THÁI DĂNG NHẬP ADMIN
+        // QUẢN LÝ TRẠNG THÁI ĐĂNG NHẬP ADMIN
         window.isAdminLoggedIn = false;
         window.targetTabAfterLogin = null;
         window.targetBtnAfterLogin = null;
+
+        // HÀM BỔ TRỢ THỜI GIAN
+        window.getCurrentTimeHHMM = function() {
+            const d = new Date();
+            return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        };
+
+        window.addMinutesToTime = function(timeStr, mins) {
+            if (!timeStr) return '';
+            const parts = timeStr.split(':');
+            if (parts.length < 2) return '';
+            let h = parseInt(parts[0], 10);
+            let m = parseInt(parts[1], 10);
+            if (isNaN(h) || isNaN(m)) return '';
+            
+            let date = new Date();
+            date.setHours(h, m + (Number(mins) || 0), 0);
+            return String(date.getHours()).padStart(2, '0') + ':' + String(date.getMinutes()).padStart(2, '0');
+        };
+
+        window.applyTheme = function(theme) {
+            if (!theme) return;
+            if (theme.primary) document.documentElement.style.setProperty('--primary', theme.primary);
+            if (theme.sidebar) document.documentElement.style.setProperty('--sidebar-bg', theme.sidebar);
+            if (theme.bg) document.documentElement.style.setProperty('--bg-main', theme.bg);
+            if (theme.text) document.documentElement.style.setProperty('--text-main', theme.text);
+        };
+
+        window.previewTheme = function() {
+            const theme = {
+                primary: document.getElementById("cfg-theme-primary").value,
+                sidebar: document.getElementById("cfg-theme-sidebar").value,
+                bg: document.getElementById("cfg-theme-bg").value,
+                text: document.getElementById("cfg-theme-text").value
+            };
+            window.applyTheme(theme);
+        };
+
+        window.resetDefaultTheme = function() {
+            const defaultTheme = { primary: "#10b981", sidebar: "#1e293b", bg: "#f8fafc", text: "#0f172a" };
+            document.getElementById("cfg-theme-primary").value = defaultTheme.primary;
+            document.getElementById("cfg-theme-sidebar").value = defaultTheme.sidebar;
+            document.getElementById("cfg-theme-bg").value = defaultTheme.bg;
+            document.getElementById("cfg-theme-text").value = defaultTheme.text;
+            window.applyTheme(defaultTheme);
+        };
 
         window.init = function() {
             document.getElementById("web-title").innerText = "🪷 " + window.SPA_CONFIG.NAME;
@@ -646,6 +721,7 @@
                 expYearSelect.innerHTML += `<option value="${y}">${y}</option>`;
             }
 
+            window.applyTheme(window.SPA_CONFIG.THEME);
             window.renderCategories();
             window.renderServices();
         };
@@ -744,20 +820,31 @@
             `).join('');
         };
 
+        // CHỌN DỊCH VỤ: TĂNG SỐ LƯỢNG NẾU ĐÃ CÓ VÀ TỰ ĐỘNG TÍNH GIỜ VÀO/RA
         window.addToCartByItem = function(name) {
             const list = window.getServicesList();
             const item = list.find(s => s.name === name);
             if (!item) return;
 
-            window.cart.push({
-                id: Date.now() + Math.random(),
-                name: item.name,
-                duration: item.duration,
-                vnd: Number(item.vnd),
-                ktvType: "Nội bộ",
-                ktvName: "",
-                ktvExtFee: 0
-            });
+            const existingItem = window.cart.find(i => i.name === item.name);
+            if (existingItem) {
+                existingItem.qty = (existingItem.qty || 1) + 1;
+            } else {
+                const nowTime = window.getCurrentTimeHHMM();
+                const duration = Number(item.duration) || 30;
+                window.cart.push({
+                    id: Date.now() + Math.random(),
+                    name: item.name,
+                    duration: duration,
+                    vnd: Number(item.vnd),
+                    qty: 1,
+                    startTime: nowTime,
+                    endTime: window.addMinutesToTime(nowTime, duration),
+                    ktvType: "Nội bộ",
+                    ktvName: "",
+                    ktvExtFee: 0
+                });
+            }
             window.renderCart();
         };
 
@@ -768,7 +855,18 @@
 
         window.updateCartItem = function(id, field, val) {
             const item = window.cart.find(i => i.id === id);
-            if (item) item[field] = (field === 'vnd' || field === 'ktvExtFee') ? Number(val) : val;
+            if (item) {
+                if (field === 'vnd' || field === 'ktvExtFee' || field === 'qty' || field === 'duration') {
+                    item[field] = Math.max(1, Number(val) || 0);
+                } else {
+                    item[field] = val;
+                }
+
+                // Cập nhật lại Giờ ra tự động nếu thay đổi Số phút hoặc Giờ vào
+                if (field === 'duration' || field === 'startTime') {
+                    item.endTime = window.addMinutesToTime(item.startTime, item.duration);
+                }
+            }
             window.renderCart();
         };
 
@@ -792,22 +890,28 @@
                             <b>${item.name}</b>
                             <button class="btn-danger" onclick="removeFromCart(${item.id})">×</button>
                         </div>
-                        <div class="cart-item-row">
-                            <span>Giá: <input type="number" class="input-inline" style="width:75px" value="${item.vnd}" onchange="updateCartItem(${item.id}, 'vnd', this.value)"> đ</span>
-                            <select class="input-inline" onchange="updateCartItem(${item.id}, 'ktvType', this.value)">
+                        <div class="cart-item-row" style="margin-top:4px;">
+                            <span>SL: <input type="number" min="1" class="input-inline" style="width:45px" value="${item.qty || 1}" onchange="updateCartItem(${item.id}, 'qty', this.value)"></span>
+                            <span>Phút: <input type="number" min="1" class="input-inline" style="width:48px" value="${item.duration || 30}" onchange="updateCartItem(${item.id}, 'duration', this.value)"></span>
+                            <span>Đ.Giá: <input type="number" class="input-inline" style="width:70px" value="${item.vnd}" onchange="updateCartItem(${item.id}, 'vnd', this.value)"> đ</span>
+                        </div>
+                        <div class="cart-item-row" style="margin-top:4px;">
+                            <span>Vào: <input type="time" class="input-inline" style="width:72px" value="${item.startTime || ''}" onchange="updateCartItem(${item.id}, 'startTime', this.value)"></span>
+                            <span>Ra: <input type="time" class="input-inline" style="width:72px" value="${item.endTime || ''}" onchange="updateCartItem(${item.id}, 'endTime', this.value)"></span>
+                        </div>
+                        <div class="cart-item-row" style="margin-top:4px;">
+                            <select class="input-inline" style="width:32%" onchange="updateCartItem(${item.id}, 'ktvType', this.value)">
                                 <option value="Nội bộ" ${item.ktvType==='Nội bộ'?'selected':''}>KTV Trong</option>
                                 <option value="KTV Ngoài" ${item.ktvType==='KTV Ngoài'?'selected':''}>KTV Ngoài</option>
                             </select>
-                        </div>
-                        <div class="cart-item-row" style="margin-top:3px;">
-                            <input type="text" placeholder="Tên KTV" class="input-inline" style="width:48%" value="${item.ktvName}" onchange="updateCartItem(${item.id}, 'ktvName', this.value)">
-                            ${item.ktvType === 'KTV Ngoài' ? `<input type="number" placeholder="Vé KTV ngoài" class="input-inline" style="width:48%" value="${item.ktvExtFee}" onchange="updateCartItem(${item.id}, 'ktvExtFee', this.value)">` : ''}
+                            <input type="text" placeholder="Tên KTV" class="input-inline" style="width:32%" value="${item.ktvName || ''}" onchange="updateCartItem(${item.id}, 'ktvName', this.value)">
+                            ${item.ktvType === 'KTV Ngoài' ? `<input type="number" placeholder="Vé KTV ngoài" class="input-inline" style="width:32%" value="${item.ktvExtFee || 0}" onchange="updateCartItem(${item.id}, 'ktvExtFee', this.value)">` : ''}
                         </div>
                     </div>
                 `).join('');
             }
 
-            const subTotal = window.cart.reduce((sum, i) => sum + Number(i.vnd), 0);
+            const subTotal = window.cart.reduce((sum, i) => sum + (Number(i.vnd) * Number(i.qty || 1)), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
@@ -821,7 +925,7 @@
         window.saveTransaction = async function(status) {
             if (window.cart.length === 0) return alert("Vui lòng chọn ít nhất 1 dịch vụ!");
 
-            const subTotal = window.cart.reduce((sum, i) => sum + Number(i.vnd), 0);
+            const subTotal = window.cart.reduce((sum, i) => sum + (Number(i.vnd) * Number(i.qty || 1)), 0);
             const discount = Number(document.getElementById("cart-discount").value) || 0;
             const totalVnd = Math.max(0, subTotal - discount);
             const totalKtvExtFee = window.cart.reduce((sum, i) => sum + (i.ktvType === 'KTV Ngoài' ? Number(i.ktvExtFee || 0) : 0), 0);
@@ -961,10 +1065,10 @@
                 <div>Khách: ${tx.customer} (${tx.nation})<br>Phòng: ${tx.room}<br>${tx.hdv ? ' HDV: ' + tx.hdv + '<br>' : ''}</div>
                 <p>--------------------------------</p>
                 ${tx.items.map(i => `
-                    <div><b>${i.name}</b> (${i.duration}p)</div>
+                    <div><b>${i.name}</b> x${i.qty || 1} (${i.duration}p)</div>
                     <div style="display:flex; justify-content:space-between; font-size:9px;">
-                        <span>KTV: ${i.ktvName || 'N/A'}</span>
-                        <span>${Number(i.vnd).toLocaleString()} đ</span>
+                        <span>Giờ: ${i.startTime || '--:--'} - ${i.endTime || '--:--'} | KTV: ${i.ktvName || 'N/A'}</span>
+                        <span>${(Number(i.vnd) * Number(i.qty || 1)).toLocaleString()} đ</span>
                     </div>
                 `).join('')}
                 <p>--------------------------------</p>
@@ -1033,7 +1137,7 @@
                 }
 
                 roomStats[t.room] = (roomStats[t.room] || 0) + 1;
-                t.items.forEach(i => { serviceStats[i.name] = (serviceStats[i.name] || 0) + 1; });
+                t.items.forEach(i => { serviceStats[i.name] = (serviceStats[i.name] || 0) + (i.qty || 1); });
             });
 
             const filteredExpenses = window.expenses.filter(e => {
@@ -1075,7 +1179,7 @@
                         <td>${t.customer} (${t.nation})</td>
                         <td>${t.hdv || '-'}</td>
                         <td>${t.room}</td>
-                        <td>${t.items.map(i => i.name).join('<br>')}</td>
+                        <td>${t.items.map(i => `${i.name} (x${i.qty || 1})`).join('<br>')}</td>
                         <td><b>${t.totalVnd.toLocaleString()} đ</b></td>
                         <td>
                             <button class="btn-warning" onclick="switchTab('pos-tab', document.querySelectorAll('.nav-btn')[0]); editTransaction('${t.id}');">Sửa</button>
@@ -1161,6 +1265,14 @@
             document.getElementById("cfg-bank-acc").value = window.SPA_CONFIG.BANK_ACC || "";
             document.getElementById("cfg-bank-name").value = window.SPA_CONFIG.BANK_NAME || "";
             document.getElementById("cfg-admin-pin").value = window.SPA_CONFIG.ADMIN_PIN || "1234";
+
+            if (window.SPA_CONFIG.THEME) {
+                document.getElementById("cfg-theme-primary").value = window.SPA_CONFIG.THEME.primary || "#10b981";
+                document.getElementById("cfg-theme-sidebar").value = window.SPA_CONFIG.THEME.sidebar || "#1e293b";
+                document.getElementById("cfg-theme-bg").value = window.SPA_CONFIG.THEME.bg || "#f8fafc";
+                document.getElementById("cfg-theme-text").value = window.SPA_CONFIG.THEME.text || "#0f172a";
+            }
+
             window.renderCategoryEditList();
             window.renderServicesTableSettings();
         };
@@ -1286,6 +1398,13 @@
             window.SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
             window.SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
             
+            window.SPA_CONFIG.THEME = {
+                primary: document.getElementById("cfg-theme-primary").value,
+                sidebar: document.getElementById("cfg-theme-sidebar").value,
+                bg: document.getElementById("cfg-theme-bg").value,
+                text: document.getElementById("cfg-theme-text").value
+            };
+
             const newPin = document.getElementById("cfg-admin-pin").value.trim();
             if (newPin) window.SPA_CONFIG.ADMIN_PIN = newPin;
 
@@ -1343,7 +1462,7 @@
             if (window.filteredCache.length === 0) return alert("Không có dữ liệu!");
             let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ,Giảm Giá,Hình Thức TT,Thành Tiền VND\n";
             window.filteredCache.forEach(t => {
-                const svcs = t.items.map(i => i.name).join(' | ');
+                const svcs = t.items.map(i => `${i.name} (x${i.qty || 1})`).join(' | ');
                 csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.discount}","${t.paymentMethod}","${t.totalVnd}"\n`;
             });
 
