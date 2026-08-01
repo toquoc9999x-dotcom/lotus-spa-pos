@@ -95,6 +95,41 @@
         .btn-success { background: var(--primary); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
         .btn-warning { background: var(--accent-orange); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
 
+        /* MODAL ĐĂNG NHẬP ADMIN */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            width: 320px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-card h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-main); }
+        .modal-card p { font-size: 12px; color: #64748b; margin-bottom: 16px; }
+        .modal-card input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            outline: none;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
         @media (max-width: 768px) {
             body { flex-direction: column-reverse; }
             .sidebar { width: 100%; height: 55px; flex-direction: row; justify-content: space-around; padding-top: 0; border-top: 1px solid var(--border-color); }
@@ -121,6 +156,7 @@
         <button class="nav-btn" onclick="switchTab('report-tab', this)"><span>📊</span> Báo cáo</button>
         <button class="nav-btn" onclick="switchTab('expense-tab', this)"><span>📦</span> Báo cáo Kho</button>
         <button class="nav-btn" onclick="switchTab('settings-tab', this)"><span>⚙️</span> Cài đặt</button>
+        <button class="nav-btn" id="btn-admin-logout" style="display: none; color: #ef4444; margin-top: auto;" onclick="logoutAdmin()"><span>🔒</span> Đăng xuất</button>
     </div>
 
     <!-- TAB 1: POS BÁN HÀNG -->
@@ -359,6 +395,15 @@
             <h2>⚙️ Cài Đặt Hệ Thống, Danh Mục & Dịch Vụ</h2>
             <br>
             
+            <h3 style="color:var(--accent-red); font-size:13px; margin-bottom:10px;">🔐 Đổi Mật Khẩu Admin (PIN)</h3>
+            <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:11px; font-weight:600;">Mật khẩu Admin mới:</label>
+                    <input type="password" id="cfg-admin-pin" placeholder="Nhập PIN mới (Mặc định: 1234)" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                </div>
+                <small style="font-size:10px; color:#64748b;">* Mật khẩu quản trị hiện tại được dùng để bảo vệ Báo cáo, Chi phí và Cài đặt.</small>
+            </div>
+
             <h3 style="color:var(--primary-dark); font-size:14px; margin-bottom:10px;">💆 Quản Lý & Sửa Menu Dịch Vụ Spa</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
@@ -469,6 +514,21 @@
         </div>
     </div>
 
+    <!-- POPUP MODAL ĐĂNG NHẬP ADMIN -->
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-card">
+            <h3>🔐 XÁC NHẬN QUYỀN ADMIN</h3>
+            <p>Vui lòng nhập mật khẩu Admin để truy cập Báo cáo, Chi phí và Cài đặt.</p>
+            <form onsubmit="event.preventDefault(); verifyAdminPIN();">
+                <input type="password" id="admin-pin-input" placeholder="Mật khẩu..." autofocus>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn-warning" onclick="closeLoginModal()" style="flex: 1; padding: 10px;">Hủy</button>
+                    <button type="submit" class="pay-btn" style="flex: 1; padding: 10px;">Đăng Nhập</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="print-area" style="display: none;"></div>
 
     <script type="module">
@@ -494,6 +554,7 @@
             if (docSnap.exists()) {
                 window.SPA_CONFIG = docSnap.data();
                 if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = window.defaultServices;
+                if (!window.SPA_CONFIG.ADMIN_PIN) window.SPA_CONFIG.ADMIN_PIN = "1234";
                 window.loadSettingsToUI();
                 window.renderCategories();
                 window.renderServices();
@@ -544,6 +605,7 @@
             BANK_ID: "MB",
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
+            ADMIN_PIN: "1234",
             CATEGORIES: ["Tắm & Xông Hơi", "Massage Đầu/Cổ/Vai/Chân", "Body Massage", "Combo Body", "Nail Care", "Gội Đầu & Skincare"],
             SERVICES: [...window.defaultServices]
         };
@@ -556,6 +618,11 @@
         window.transactions = [];
         window.expenses = [];
         window.filteredCache = [];
+
+        // QUẢN LÝ TRẠNG THÁI DĂNG NHẬP ADMIN
+        window.isAdminLoggedIn = false;
+        window.targetTabAfterLogin = null;
+        window.targetBtnAfterLogin = null;
 
         window.init = function() {
             document.getElementById("web-title").innerText = "🪷 " + window.SPA_CONFIG.NAME;
@@ -584,6 +651,14 @@
         };
 
         window.switchTab = function(tabId, btn) {
+            const protectedTabs = ['report-tab', 'expense-tab', 'settings-tab'];
+            if (protectedTabs.includes(tabId) && !window.isAdminLoggedIn) {
+                window.targetTabAfterLogin = tabId;
+                window.targetBtnAfterLogin = btn;
+                window.openLoginModal();
+                return;
+            }
+
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
@@ -591,6 +666,44 @@
             if (tabId === 'report-tab') window.updateReportUI();
             if (tabId === 'expense-tab') window.updateExpenseUI();
             if (tabId === 'pos-tab') window.renderPendingTransactionsPOS();
+        };
+
+        window.openLoginModal = function() {
+            document.getElementById("login-modal").classList.add("active");
+            const pinInput = document.getElementById("admin-pin-input");
+            pinInput.value = "";
+            setTimeout(() => pinInput.focus(), 100);
+        };
+
+        window.closeLoginModal = function() {
+            document.getElementById("login-modal").classList.remove("active");
+            window.targetTabAfterLogin = null;
+            window.targetBtnAfterLogin = null;
+        };
+
+        window.verifyAdminPIN = function() {
+            const inputPin = document.getElementById("admin-pin-input").value;
+            const currentPin = (window.SPA_CONFIG && window.SPA_CONFIG.ADMIN_PIN) ? window.SPA_CONFIG.ADMIN_PIN : "1234";
+
+            if (inputPin === currentPin) {
+                window.isAdminLoggedIn = true;
+                document.getElementById("btn-admin-logout").style.display = "flex";
+                window.closeLoginModal();
+                if (window.targetTabAfterLogin && window.targetBtnAfterLogin) {
+                    window.switchTab(window.targetTabAfterLogin, window.targetBtnAfterLogin);
+                }
+            } else {
+                alert("Mật khẩu Admin không đúng! Vui lòng thử lại.");
+                document.getElementById("admin-pin-input").value = "";
+            }
+        };
+
+        window.logoutAdmin = function() {
+            window.isAdminLoggedIn = false;
+            document.getElementById("btn-admin-logout").style.display = "none";
+            const posBtn = document.querySelectorAll('.nav-btn')[0];
+            window.switchTab('pos-tab', posBtn);
+            alert("Đã đăng xuất tài khoản Admin!");
         };
 
         window.renderCategories = function() {
@@ -1047,6 +1160,7 @@
             document.getElementById("cfg-bank-id").value = window.SPA_CONFIG.BANK_ID || "MB";
             document.getElementById("cfg-bank-acc").value = window.SPA_CONFIG.BANK_ACC || "";
             document.getElementById("cfg-bank-name").value = window.SPA_CONFIG.BANK_NAME || "";
+            document.getElementById("cfg-admin-pin").value = window.SPA_CONFIG.ADMIN_PIN || "1234";
             window.renderCategoryEditList();
             window.renderServicesTableSettings();
         };
@@ -1171,6 +1285,9 @@
             window.SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
             window.SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
             window.SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
+            
+            const newPin = document.getElementById("cfg-admin-pin").value.trim();
+            if (newPin) window.SPA_CONFIG.ADMIN_PIN = newPin;
 
             await window.saveConfigToFirebase(window.SPA_CONFIG);
             document.getElementById("web-title").innerText = "🪷 " + window.SPA_CONFIG.NAME;
