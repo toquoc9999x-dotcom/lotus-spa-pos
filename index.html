@@ -256,6 +256,16 @@
                     <div class="summary-row"><span>Giảm giá:</span><span id="discount-val">0 đ</span></div>
                     <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
                     <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2563eb; font-weight:bold;">$0</span></div>
+                    
+                    <!-- BỔ SUNG KHÁCH ĐƯÀ & TIỀN THỪA -->
+                    <div class="summary-row" style="margin-top: 8px; align-items: center;">
+                        <span>Khách đưa tiền:</span>
+                        <input type="number" id="cart-paid" placeholder="0" oninput="renderCart()" style="width: 120px; padding: 4px 6px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 4px; text-align: right; outline: none; background: #fff; font-weight:600;">
+                    </div>
+                    <div class="summary-row" style="font-weight: 700; color: var(--primary-dark); margin-top: 4px;">
+                        <span>Tiền thừa trả khách:</span>
+                        <span id="cart-change">0 đ</span>
+                    </div>
                 </div>
 
                 <div class="action-btns">
@@ -344,13 +354,13 @@
                     <thead>
                         <tr>
                             <th>Mã HD</th>
-                            <th>Thời Gian</th>
+                            <th>Ngày Hóa Đơn (Bấm Sửa)</th>
                             <th>Trạng Thái</th>
                             <th>Khách / QT</th>
                             <th>HDV</th>
                             <th>Phòng</th>
                             <th>Dịch Vụ & Giờ Làm</th>
-                            <th>HT Thanh Toán</th> <!-- Cột hiển thị & Sửa nhanh HTTT -->
+                            <th>HT Thanh Toán</th>
                             <th>Thành Tiền</th>
                             <th>Thao Tác</th>
                         </tr>
@@ -848,7 +858,6 @@
             return window.SPA_CONFIG.SERVICES && window.SPA_CONFIG.SERVICES.length > 0 ? window.SPA_CONFIG.SERVICES : window.defaultServices;
         };
 
-        // HIỂN THỊ DỊCH VỤ CÓ KẾT HỢP THANH TÌM KIẾM BÁN HÀNG
         window.renderServices = function() {
             const list = window.getServicesList();
             const searchVal = (document.getElementById("pos-service-search") ? document.getElementById("pos-service-search").value : "").toLowerCase().trim();
@@ -965,10 +974,18 @@
             const totalVnd = Math.max(0, subTotal - discount);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
 
+            const custPaid = Number(document.getElementById("cart-paid") ? document.getElementById("cart-paid").value : 0) || 0;
+            const custChange = custPaid > 0 ? (custPaid - totalVnd) : 0;
+
             document.getElementById("sub-total").innerText = subTotal.toLocaleString() + ' đ';
             document.getElementById("discount-val").innerText = discount.toLocaleString() + ' đ';
             document.getElementById("total-vnd").innerText = totalVnd.toLocaleString() + ' đ';
             document.getElementById("total-usd").innerText = '$' + (totalVnd / rate).toFixed(1);
+
+            if (document.getElementById("cart-change")) {
+                document.getElementById("cart-change").innerText = custChange.toLocaleString() + ' đ';
+                document.getElementById("cart-change").style.color = custChange < 0 ? 'var(--accent-red)' : 'var(--primary-dark)';
+            }
         };
 
         window.saveTransaction = async function(status) {
@@ -979,6 +996,9 @@
             const totalVnd = Math.max(0, subTotal - discount);
             const totalKtvExtFee = window.cart.reduce((sum, i) => sum + (i.ktvType === 'KTV Ngoài' ? Number(i.ktvExtFee || 0) : 0), 0);
             const rate = Number(document.getElementById("usd-rate").value) || 25000;
+
+            const custPaid = Number(document.getElementById("cart-paid").value) || 0;
+            const custChange = custPaid > 0 ? (custPaid - totalVnd) : 0;
 
             const now = new Date();
             const yyyy = now.getFullYear();
@@ -1002,6 +1022,8 @@
                 discount: discount,
                 totalKtvExtFee: totalKtvExtFee,
                 paymentMethod: window.selectedPayment,
+                custPaid: custPaid,
+                custChange: custChange,
                 totalVnd: totalVnd,
                 totalUsd: (totalVnd / rate).toFixed(1),
                 note: document.getElementById("cart-note").value
@@ -1027,6 +1049,7 @@
             document.getElementById("cust-hdv").value = "";
             document.getElementById("cust-nation").value = "";
             document.getElementById("cart-discount").value = 0;
+            document.getElementById("cart-paid").value = "";
             document.getElementById("cart-note").value = "";
             window.renderCart();
         };
@@ -1044,6 +1067,7 @@
             document.getElementById("cust-hdv").value = tx.hdv || "";
             document.getElementById("cust-room").value = tx.room;
             document.getElementById("cart-discount").value = tx.discount || 0;
+            document.getElementById("cart-paid").value = tx.custPaid || "";
             document.getElementById("cart-note").value = tx.note || "";
             window.setPaymentMethod(tx.paymentMethod || 'Tiền mặt');
 
@@ -1124,6 +1148,8 @@
                 <div style="display:flex; justify-content:space-between;"><span>Giảm giá:</span><span>-${tx.discount.toLocaleString()} đ</span></div>
                 <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px;"><span>Thành tiền:</span><span>${tx.totalVnd.toLocaleString()} đ</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>Hình thức TT:</span><span><b>${tx.paymentMethod}</b></span></div>
+                ${tx.custPaid ? `<div style="display:flex; justify-content:space-between;"><span>Khách đưa:</span><span>${Number(tx.custPaid).toLocaleString()} đ</span></div>` : ''}
+                ${tx.custPaid ? `<div style="display:flex; justify-content:space-between;"><span>Tiền thừa:</span><span>${Number(tx.custChange || 0).toLocaleString()} đ</span></div>` : ''}
                 ${tx.note ? `<p style="font-size:9px;">Ghi chú: ${tx.note}</p>` : ''}
                 ${qrImageHtml}
                 <br><p style="text-align:center; font-size:9px;">Cảm ơn & Hẹn gặp lại!</p>
@@ -1162,7 +1188,7 @@
             select.innerHTML = html;
         };
 
-        // HÀM SỬA NHANH HÌNH THỨC THANH TOÁN TRỰC TIẾP TỪ BẢNG BÁO CÁO
+        // HÀM SỬA NHANH HÌNH THỨC THANH TOÁN
         window.quickUpdatePaymentMethod = async function(txId, newMethod) {
             const tx = window.transactions.find(t => t.id === txId);
             if (tx) {
@@ -1171,7 +1197,27 @@
             }
         };
 
-        // CẬP NHẬT BÁO CÁO VỚI TÌM KIẾM TỔNG HỢP VÀ LỌC THEO HÌNH THỨC THANH TOÁN
+        // HÀM SỬA/CẬP NHẬT NGÀY HÓA ĐƠN TRỰC TIẾP
+        window.quickUpdateTxDate = async function(txId, newIsoDate) {
+            if (!newIsoDate) return;
+            const tx = window.transactions.find(t => t.id === txId);
+            if (tx) {
+                const parts = newIsoDate.split('-');
+                if (parts.length === 3) {
+                    const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    const timePart = tx.createdTime ? (tx.createdTime.split(' ')[1] || '00:00') : '00:00';
+                    tx.isoDate = newIsoDate;
+                    tx.createdTime = `${formattedDate} ${timePart}`;
+                    
+                    const timeParts = timePart.split(':');
+                    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), Number(timeParts[0]||0), Number(timeParts[1]||0));
+                    tx.timestamp = d.getTime();
+
+                    await window.saveTxToFirebase(tx);
+                }
+            }
+        };
+
         window.updateReportUI = function() {
             window.populateReportServiceOptions();
 
@@ -1286,14 +1332,17 @@
                 return `
                     <tr>
                         <td><b>${t.id}</b></td>
-                        <td>${t.createdTime}</td>
+                        <td>
+                            <!-- CHỈNH SỬA NGÀY HÓA ĐƠN TRỰC TIẾP -->
+                            <input type="date" class="input-inline" value="${t.isoDate || ''}" onchange="quickUpdateTxDate('${t.id}', this.value)" style="font-weight:600; font-size:11px; padding:2px 4px;">
+                            <div style="font-size:10px; color:#64748b; margin-top:2px;">🕒 ${t.createdTime ? (t.createdTime.split(' ')[1] || '') : ''}</div>
+                        </td>
                         <td><span class="badge ${isPending ? 'badge-pending' : 'badge-completed'}">${t.status}</span></td>
                         <td>${t.customer} (${t.nation})</td>
                         <td>${t.hdv || '-'}</td>
                         <td>${t.room}</td>
                         <td>${serviceInfoStr}</td>
                         <td>
-                            <!-- DROPDOWN SỬA NHANH HÌNH THỨC THANH TOÁN -->
                             <select class="input-inline" style="font-weight:600; color:var(--accent-blue);" onchange="quickUpdatePaymentMethod('${t.id}', this.value)">
                                 <option value="Tiền mặt" ${pm === 'Tiền mặt' ? 'selected' : ''}>💵 Tiền mặt</option>
                                 <option value="QR Code" ${pm === 'QR Code' ? 'selected' : ''}>📱 QR Code</option>
