@@ -34,7 +34,6 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #fff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0; }
         .header h1 { color: var(--text-main); font-size: 16px; font-weight: 700; }
 
-        /* CỐ ĐỊNH THANH DANH MỤC KHÔNG BỊ TRÔI */
         .categories { 
             display: flex; 
             gap: 8px; 
@@ -72,7 +71,7 @@
         .cart-items { flex: 1; overflow-y: auto; margin-bottom: 10px; min-height: 120px; max-height: 280px; }
         .cart-item { background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px; margin-bottom: 6px; font-size: 11px; }
         .cart-item-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 4px; flex-wrap: wrap; }
-        .input-inline { padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 11px; background: #fff; }
+        .input-inline { padding: 4px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 11px; background: #fff; outline: none; }
         
         .payment-options { display: flex; gap: 6px; margin-bottom: 10px; }
         .payment-btn { flex: 1; padding: 8px 4px; border: 1px solid var(--border-color); background: var(--bg-main); border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 600; text-align: center; }
@@ -94,8 +93,8 @@
         .stat-card h3 { font-size: 11px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
         .stat-card .val { font-size: 17px; font-weight: 700; color: var(--text-main); }
 
-        .filter-bar { background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; font-size: 12px; }
-        .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; background: #fff; }
+        .filter-bar { background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; gap: 8px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; font-size: 12px; }
+        .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; background: #fff; outline: none; }
 
         .badge { padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; }
         .badge-pending { background: #fef3c7; color: #d97706; }
@@ -184,6 +183,12 @@
                 </div>
                 
                 <div class="categories" id="categories-container"></div>
+                
+                <!-- THANH TÌM KIẾM DỊCH VỤ -->
+                <div style="margin-bottom: 12px;">
+                    <input type="text" id="pos-service-search" placeholder="🔍 Tìm kiếm dịch vụ..." oninput="renderServices()" style="width: 100%; padding: 8px 12px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                </div>
+
                 <div class="services-grid" id="services-container"></div>
 
                 <div class="pending-section">
@@ -269,7 +274,7 @@
                 <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất File CSV / Excel</button>
             </div>
 
-            <!-- BỘ LỌC BÁO CÁO MỚI (LỌC DỊCH VỤ VÀ THỜI GIAN LÀM) -->
+            <!-- BỘ LỌC BÁO CÁO MỚI VỚI LỌC THANH TOÁN VÀ THANH TÌM KIẾM -->
             <div class="filter-bar">
                 <label>Thời gian:</label>
                 <select id="report-mode" onchange="toggleFilterInputs()">
@@ -282,22 +287,35 @@
                 <div id="group-filter-month" style="display:none;"><input type="month" id="filter-month" onchange="updateReportUI()"></div>
                 <div id="group-filter-year" style="display:none;"><select id="filter-year" onchange="updateReportUI()"></select></div>
 
-                <label style="margin-left:8px;">Trạng thái:</label>
+                <label>Trạng thái:</label>
                 <select id="filter-status" onchange="updateReportUI()">
                     <option value="all">Tất cả</option>
                     <option value="Hoàn thành">Đã hoàn thành</option>
                     <option value="Chờ thanh toán">Chờ thanh toán</option>
                 </select>
 
-                <label style="margin-left:8px;">Dịch vụ:</label>
+                <!-- LỌC HÌNH THỨC THANH TOÁN -->
+                <label>Thanh toán:</label>
+                <select id="filter-payment" onchange="updateReportUI()">
+                    <option value="all">-- Tất cả HTTT --</option>
+                    <option value="Tiền mặt">💵 Tiền mặt</option>
+                    <option value="QR Code">📱 QR Code</option>
+                    <option value="Chuyển khoản">🏦 Chuyển khoản</option>
+                    <option value="Cà thẻ">💳 Cà thẻ</option>
+                </select>
+
+                <label>Dịch vụ:</label>
                 <select id="filter-service" onchange="updateReportUI()">
                     <option value="all">-- Tất cả dịch vụ --</option>
                 </select>
 
-                <label style="margin-left:8px;">Giờ làm từ:</label>
+                <label>Giờ làm từ:</label>
                 <input type="time" id="filter-time-from" onchange="updateReportUI()">
                 <label>đến:</label>
                 <input type="time" id="filter-time-to" onchange="updateReportUI()">
+
+                <!-- THANH TÌM KIẾM BÁO CÁO -->
+                <input type="text" id="report-search-input" placeholder="🔍 Tìm Mã HD, Khách, HDV, Phòng..." oninput="updateReportUI()" style="flex:1; min-width:180px;">
             </div>
 
             <div class="stats-grid">
@@ -332,6 +350,7 @@
                             <th>HDV</th>
                             <th>Phòng</th>
                             <th>Dịch Vụ & Giờ Làm</th>
+                            <th>HT Thanh Toán</th> <!-- Cột hiển thị & Sửa nhanh HTTT -->
                             <th>Thành Tiền</th>
                             <th>Thao Tác</th>
                         </tr>
@@ -829,9 +848,16 @@
             return window.SPA_CONFIG.SERVICES && window.SPA_CONFIG.SERVICES.length > 0 ? window.SPA_CONFIG.SERVICES : window.defaultServices;
         };
 
+        // HIỂN THỊ DỊCH VỤ CÓ KẾT HỢP THANH TÌM KIẾM BÁN HÀNG
         window.renderServices = function() {
             const list = window.getServicesList();
-            const filtered = window.currentCategory === "Tất cả" ? list : list.filter(item => item.category === window.currentCategory);
+            const searchVal = (document.getElementById("pos-service-search") ? document.getElementById("pos-service-search").value : "").toLowerCase().trim();
+            
+            const filtered = list.filter(item => {
+                const matchCat = window.currentCategory === "Tất cả" || item.category === window.currentCategory;
+                const matchSearch = !searchVal || item.name.toLowerCase().includes(searchVal);
+                return matchCat && matchSearch;
+            });
             
             document.getElementById("services-container").innerHTML = filtered.map((item) => `
                 <div class="service-card" onclick="addToCartByItem('${item.name}')">
@@ -1123,7 +1149,6 @@
             window.updateExpenseUI();
         };
 
-        // ĐỒNG BỘ DANH SÁCH DỊCH VỤ VÀO BỘ LỌC BÁO CÁO
         window.populateReportServiceOptions = function() {
             const select = document.getElementById("filter-service");
             if (!select) return;
@@ -1137,12 +1162,22 @@
             select.innerHTML = html;
         };
 
-        // CẬP NHẬT BÁO CÁO VỚI LỌC DỊCH VỤ VÀ THỜI GIAN LÀM
+        // HÀM SỬA NHANH HÌNH THỨC THANH TOÁN TRỰC TIẾP TỪ BẢNG BÁO CÁO
+        window.quickUpdatePaymentMethod = async function(txId, newMethod) {
+            const tx = window.transactions.find(t => t.id === txId);
+            if (tx) {
+                tx.paymentMethod = newMethod;
+                await window.saveTxToFirebase(tx);
+            }
+        };
+
+        // CẬP NHẬT BÁO CÁO VỚI TÌM KIẾM TỔNG HỢP VÀ LỌC THEO HÌNH THỨC THANH TOÁN
         window.updateReportUI = function() {
             window.populateReportServiceOptions();
 
             const mode = document.getElementById("report-mode").value;
             const statusFilter = document.getElementById("filter-status").value;
+            const paymentFilter = document.getElementById("filter-payment") ? document.getElementById("filter-payment").value : "all";
             const filterDate = document.getElementById("filter-date").value;
             const filterMonth = document.getElementById("filter-month").value;
             const filterYear = document.getElementById("filter-year").value;
@@ -1150,6 +1185,7 @@
             const serviceFilter = document.getElementById("filter-service") ? document.getElementById("filter-service").value : "all";
             const timeFrom = document.getElementById("filter-time-from") ? document.getElementById("filter-time-from").value : "";
             const timeTo = document.getElementById("filter-time-to") ? document.getElementById("filter-time-to").value : "";
+            const searchQuery = document.getElementById("report-search-input") ? document.getElementById("report-search-input").value.toLowerCase().trim() : "";
 
             window.filteredCache = window.transactions.filter(t => {
                 let matchTime = true;
@@ -1159,6 +1195,9 @@
 
                 let matchStatus = true;
                 if (statusFilter !== 'all') matchStatus = t.status === statusFilter;
+
+                let matchPayment = true;
+                if (paymentFilter !== 'all') matchPayment = t.paymentMethod === paymentFilter;
 
                 let matchService = true;
                 if (serviceFilter !== 'all') {
@@ -1175,7 +1214,14 @@
                     });
                 }
 
-                return matchTime && matchStatus && matchService && matchServiceTime;
+                let matchSearch = true;
+                if (searchQuery) {
+                    const servicesText = (t.items || []).map(i => i.name).join(' ').toLowerCase();
+                    const fullText = `${t.id} ${t.customer} ${t.nation} ${t.hdv} ${t.room} ${t.note || ''} ${servicesText}`.toLowerCase();
+                    matchSearch = fullText.includes(searchQuery);
+                }
+
+                return matchTime && matchStatus && matchPayment && matchService && matchServiceTime && matchSearch;
             });
 
             let totalRev = 0, totalDisc = 0, totalHdvComm = 0, totalKtvFee = 0;
@@ -1235,6 +1281,8 @@
             tbody.innerHTML = window.filteredCache.map((t) => {
                 const isPending = t.status === 'Chờ thanh toán';
                 const serviceInfoStr = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join('<br>');
+                const pm = t.paymentMethod || 'Tiền mặt';
+
                 return `
                     <tr>
                         <td><b>${t.id}</b></td>
@@ -1244,6 +1292,15 @@
                         <td>${t.hdv || '-'}</td>
                         <td>${t.room}</td>
                         <td>${serviceInfoStr}</td>
+                        <td>
+                            <!-- DROPDOWN SỬA NHANH HÌNH THỨC THANH TOÁN -->
+                            <select class="input-inline" style="font-weight:600; color:var(--accent-blue);" onchange="quickUpdatePaymentMethod('${t.id}', this.value)">
+                                <option value="Tiền mặt" ${pm === 'Tiền mặt' ? 'selected' : ''}>💵 Tiền mặt</option>
+                                <option value="QR Code" ${pm === 'QR Code' ? 'selected' : ''}>📱 QR Code</option>
+                                <option value="Chuyển khoản" ${pm === 'Chuyển khoản' ? 'selected' : ''}>🏦 Chuyển khoản</option>
+                                <option value="Cà thẻ" ${pm === 'Cà thẻ' ? 'selected' : ''}>💳 Cà thẻ</option>
+                            </select>
+                        </td>
                         <td><b>${t.totalVnd.toLocaleString()} đ</b></td>
                         <td>
                             <button class="btn-warning" onclick="switchTab('pos-tab', document.querySelectorAll('.nav-btn')[0]); editTransaction('${t.id}');">Sửa</button>
@@ -1526,10 +1583,10 @@
 
         window.exportReportExcel = function() {
             if (window.filteredCache.length === 0) return alert("Không có dữ liệu!");
-            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ & Giờ Làm,Giảm Giá,Hình Thức TT,Thành Tiền VND\n";
+            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ & Giờ Làm,Hình Thức TT,Giảm Giá,Thành Tiền VND\n";
             window.filteredCache.forEach(t => {
                 const svcs = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join(' | ');
-                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.discount}","${t.paymentMethod}","${t.totalVnd}"\n`;
+                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.paymentMethod}","${t.discount}","${t.totalVnd}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
