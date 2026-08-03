@@ -100,10 +100,29 @@
         .badge-pending { background: #fef3c7; color: #d97706; }
         .badge-completed { background: #d1fae5; color: #059669; }
 
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; min-width: 600px; }
-        th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; }
-        th { background: var(--bg-main); font-weight: 600; color: #475569; }
+        /* KHUNG TẠO THANH CUỘN CHO BẢNG DANH SÁCH HÓA ĐƠN */
+        .table-responsive { 
+            width: 100%; 
+            overflow-x: auto; 
+            overflow-y: auto; 
+            max-height: 480px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 750px; }
+        th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: middle; }
+        
+        /* CỐ ĐỊNH TIÊU ĐỀ BẢNG KHI CUỘN */
+        th { 
+            background: var(--bg-main); 
+            font-weight: 600; 
+            color: #475569; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
 
         .btn-excel { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; }
         .btn-danger { background: var(--accent-red); color: white; border: none; padding: 5px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 11px; }
@@ -257,7 +276,7 @@
                     <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
                     <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2563eb; font-weight:bold;">$0</span></div>
                     
-                    <!-- BỔ SUNG KHÁCH ĐƯÀ & TIỀN THỪA -->
+                    <!-- KHÁCH ĐƯA & TIỀN THỪA -->
                     <div class="summary-row" style="margin-top: 8px; align-items: center;">
                         <span>Khách đưa tiền:</span>
                         <input type="number" id="cart-paid" placeholder="0" oninput="renderCart()" style="width: 120px; padding: 4px 6px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 4px; text-align: right; outline: none; background: #fff; font-weight:600;">
@@ -284,7 +303,7 @@
                 <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất File CSV / Excel</button>
             </div>
 
-            <!-- BỘ LỌC BÁO CÁO MỚI VỚI LỌC THANH TOÁN VÀ THANH TÌM KIẾM -->
+            <!-- BỘ LỌC BÁO CÁO -->
             <div class="filter-bar">
                 <label>Thời gian:</label>
                 <select id="report-mode" onchange="toggleFilterInputs()">
@@ -304,7 +323,6 @@
                     <option value="Chờ thanh toán">Chờ thanh toán</option>
                 </select>
 
-                <!-- LỌC HÌNH THỨC THANH TOÁN -->
                 <label>Thanh toán:</label>
                 <select id="filter-payment" onchange="updateReportUI()">
                     <option value="all">-- Tất cả HTTT --</option>
@@ -324,8 +342,7 @@
                 <label>đến:</label>
                 <input type="time" id="filter-time-to" onchange="updateReportUI()">
 
-                <!-- THANH TÌM KIẾM BÁO CÁO -->
-                <input type="text" id="report-search-input" placeholder="🔍 Tìm Mã HD, Khách, HDV, Phòng..." oninput="updateReportUI()" style="flex:1; min-width:180px;">
+                <input type="text" id="report-search-input" placeholder="🔍 Tìm Mã HD, Khách, KTV, HDV, Phòng..." oninput="updateReportUI()" style="flex:1; min-width:180px;">
             </div>
 
             <div class="stats-grid">
@@ -348,7 +365,9 @@
                 </div>
             </div>
 
-            <h3>📋 Danh Sách Tất Cả Hóa Đơn</h3>
+            <h3 style="margin-bottom:8px;">📋 Danh Sách Tất Cả Hóa Đơn</h3>
+            
+            <!-- BẢNG CÓ THANH CUỘN DỌC CỐ ĐỊNH CHIỀU CAO -->
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -360,6 +379,7 @@
                             <th>HDV</th>
                             <th>Phòng</th>
                             <th>Dịch Vụ & Giờ Làm</th>
+                            <th>KTV & Trả Vé</th>
                             <th>HT Thanh Toán</th>
                             <th>Thành Tiền</th>
                             <th>Thao Tác</th>
@@ -511,7 +531,7 @@
                     <button class="btn-warning" id="btn-cancel-svc" style="display:none;" onclick="resetServiceForm()">Hủy Sửa</button>
                 </div>
 
-                <div class="table-responsive" style="margin-top:15px; max-height:220px; overflow-y:auto;">
+                <div class="table-responsive" style="margin-top:15px; max-height:220px;">
                     <table>
                         <thead>
                             <tr>
@@ -1188,7 +1208,6 @@
             select.innerHTML = html;
         };
 
-        // HÀM SỬA NHANH HÌNH THỨC THANH TOÁN
         window.quickUpdatePaymentMethod = async function(txId, newMethod) {
             const tx = window.transactions.find(t => t.id === txId);
             if (tx) {
@@ -1197,7 +1216,6 @@
             }
         };
 
-        // HÀM SỬA/CẬP NHẬT NGÀY HÓA ĐƠN TRỰC TIẾP
         window.quickUpdateTxDate = async function(txId, newIsoDate) {
             if (!newIsoDate) return;
             const tx = window.transactions.find(t => t.id === txId);
@@ -1262,7 +1280,7 @@
 
                 let matchSearch = true;
                 if (searchQuery) {
-                    const servicesText = (t.items || []).map(i => i.name).join(' ').toLowerCase();
+                    const servicesText = (t.items || []).map(i => `${i.name} ${i.ktvName || ''}`).join(' ').toLowerCase();
                     const fullText = `${t.id} ${t.customer} ${t.nation} ${t.hdv} ${t.room} ${t.note || ''} ${servicesText}`.toLowerCase();
                     matchSearch = fullText.includes(searchQuery);
                 }
@@ -1327,13 +1345,23 @@
             tbody.innerHTML = window.filteredCache.map((t) => {
                 const isPending = t.status === 'Chờ thanh toán';
                 const serviceInfoStr = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join('<br>');
+                
+                // HIỂN THỊ CỘT CHI TIẾT KTV VÀ TIỀN VÉ KTV NGOÀI
+                const ktvInfoStr = t.items.map(i => {
+                    const ktvNameDisplay = i.ktvName ? `<b>${i.ktvName}</b>` : '<i>Chưa chọn</i>';
+                    const ktvTypeDisplay = `<span style="font-size:10px; color:#64748b;">(${i.ktvType || 'Nội bộ'})</span>`;
+                    const extFeeDisplay = (i.ktvType === 'KTV Ngoài' && i.ktvExtFee) 
+                        ? `<br><span style="color:var(--accent-red); font-weight:600;">Vé KTV: ${Number(i.ktvExtFee).toLocaleString()} đ</span>` 
+                        : '';
+                    return `${ktvNameDisplay} ${ktvTypeDisplay}${extFeeDisplay}`;
+                }).join('<hr style="border:0; border-top:1px dashed #e2e8f0; margin:3px 0;">');
+
                 const pm = t.paymentMethod || 'Tiền mặt';
 
                 return `
                     <tr>
                         <td><b>${t.id}</b></td>
                         <td>
-                            <!-- CHỈNH SỬA NGÀY HÓA ĐƠN TRỰC TIẾP -->
                             <input type="date" class="input-inline" value="${t.isoDate || ''}" onchange="quickUpdateTxDate('${t.id}', this.value)" style="font-weight:600; font-size:11px; padding:2px 4px;">
                             <div style="font-size:10px; color:#64748b; margin-top:2px;">🕒 ${t.createdTime ? (t.createdTime.split(' ')[1] || '') : ''}</div>
                         </td>
@@ -1342,6 +1370,7 @@
                         <td>${t.hdv || '-'}</td>
                         <td>${t.room}</td>
                         <td>${serviceInfoStr}</td>
+                        <td>${ktvInfoStr}</td>
                         <td>
                             <select class="input-inline" style="font-weight:600; color:var(--accent-blue);" onchange="quickUpdatePaymentMethod('${t.id}', this.value)">
                                 <option value="Tiền mặt" ${pm === 'Tiền mặt' ? 'selected' : ''}>💵 Tiền mặt</option>
@@ -1632,10 +1661,11 @@
 
         window.exportReportExcel = function() {
             if (window.filteredCache.length === 0) return alert("Không có dữ liệu!");
-            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ & Giờ Làm,Hình Thức TT,Giảm Giá,Thành Tiền VND\n";
+            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ & Giờ Làm,KTV & Trả Vé,Hình Thức TT,Giảm Giá,Thành Tiền VND\n";
             window.filteredCache.forEach(t => {
                 const svcs = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join(' | ');
-                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${t.paymentMethod}","${t.discount}","${t.totalVnd}"\n`;
+                const ktvs = t.items.map(i => `${i.ktvName || 'Chưa chọn'} (${i.ktvType || 'Nội bộ'}${i.ktvType === 'KTV Ngoài' ? ' - Vé: ' + Number(i.ktvExtFee||0).toLocaleString() + 'đ' : ''})`).join(' | ');
+                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${ktvs}","${t.paymentMethod}","${t.discount}","${t.totalVnd}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
