@@ -91,7 +91,7 @@
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 18px; }
         .stat-card { background: var(--bg-main); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; }
         .stat-card h3 { font-size: 11px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
-        .stat-card .val { font-size: 17px; font-weight: 700; color: var(--text-main); }
+        .stat-card .val { font-size: 16px; font-weight: 700; color: var(--text-main); }
 
         .filter-bar { background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; gap: 8px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; font-size: 12px; }
         .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; background: #fff; outline: none; }
@@ -100,7 +100,6 @@
         .badge-pending { background: #fef3c7; color: #d97706; }
         .badge-completed { background: #d1fae5; color: #059669; }
 
-        /* KHUNG TẠO THANH CUỘN CHO BẢNG DANH SÁCH HÓA ĐƠN */
         .table-responsive { 
             width: 100%; 
             overflow-x: auto; 
@@ -113,7 +112,6 @@
         table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 750px; }
         th, td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: middle; }
         
-        /* CỐ ĐỊNH TIÊU ĐỀ BẢNG KHI CUỘN */
         th { 
             background: var(--bg-main); 
             font-weight: 600; 
@@ -203,7 +201,6 @@
                 
                 <div class="categories" id="categories-container"></div>
                 
-                <!-- THANH TÌM KIẾM DỊCH VỤ -->
                 <div style="margin-bottom: 12px;">
                     <input type="text" id="pos-service-search" placeholder="🔍 Tìm kiếm dịch vụ..." oninput="renderServices()" style="width: 100%; padding: 8px 12px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
                 </div>
@@ -276,7 +273,6 @@
                     <div class="summary-row total"><span>Thành tiền:</span><span id="total-vnd">0 đ</span></div>
                     <div class="summary-row"><span>Tương đương:</span><span id="total-usd" style="color:#2563eb; font-weight:bold;">$0</span></div>
                     
-                    <!-- KHÁCH ĐƯA & TIỀN THỪA -->
                     <div class="summary-row" style="margin-top: 8px; align-items: center;">
                         <span>Khách đưa tiền:</span>
                         <input type="number" id="cart-paid" placeholder="0" oninput="renderCart()" style="width: 120px; padding: 4px 6px; font-size: 12px; border: 1px solid var(--border-color); border-radius: 4px; text-align: right; outline: none; background: #fff; font-weight:600;">
@@ -299,11 +295,10 @@
     <div id="report-tab" class="tab-content">
         <div class="panel-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-                <h2>📊 Báo Cáo Doanh Thu Tổng Hợp</h2>
+                <h2>📊 Báo Cáo Doanh Thu & Tổng Kết Chi Phí</h2>
                 <button class="btn-excel" onclick="exportReportExcel()">📥 Xuất File CSV / Excel</button>
             </div>
 
-            <!-- BỘ LỌC BÁO CÁO -->
             <div class="filter-bar">
                 <label>Thời gian:</label>
                 <select id="report-mode" onchange="toggleFilterInputs()">
@@ -347,11 +342,13 @@
 
             <div class="stats-grid">
                 <div class="stat-card"><h3>1. Doanh Thu Thu Vào</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
-                <div class="stat-card"><h3>2. Lợi Nhuận Thuần</h3><div class="val" id="rep-7-profit" style="color:var(--primary-dark);">0 đ</div></div>
+                <div class="stat-card" style="background:#ecfdf5; border-color:#a7f3d0;"><h3>2. Lợi Nhuận Thuần Cuối</h3><div class="val" id="rep-7-profit" style="color:var(--primary-dark);">0 đ</div></div>
                 <div class="stat-card"><h3>3. Tổng Giảm Giá</h3><div class="val" id="rep-3-discount" style="color:var(--accent-red);">0 đ</div></div>
                 <div class="stat-card"><h3>4. Hoa Hồng HDV (30%)</h3><div class="val" id="rep-4-hdv" style="color:var(--accent-orange);">0 đ</div></div>
                 <div class="stat-card"><h3>5. Tiền Vé KTV Ngoài</h3><div class="val" id="rep-5-ktv" style="color:#7c3aed;">0 đ</div></div>
                 <div class="stat-card"><h3>6. Chi Phí Vật Tư Kho</h3><div class="val" id="rep-6-expense" style="color:var(--accent-red);">0 đ</div></div>
+                <div class="stat-card"><h3>7. Phí Cà Thẻ (POS)</h3><div class="val" id="rep-9-cardfee" style="color:var(--accent-red);">0 đ</div></div>
+                <div class="stat-card" style="background:#fff1f2; border-color:#fecdd3;"><h3>8. Tổng Tất Cả Chi Phí</h3><div class="val" id="rep-10-total-expense" style="color:#be123c;">0 đ</div></div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px;">
@@ -360,20 +357,19 @@
                     <div id="rep-2-payment-details" style="font-size:11px;"></div>
                 </div>
                 <div style="background:var(--bg-main); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
-                    <h4 style="font-size:12px; margin-bottom:5px;">📈 Thống Kê Nổi Bật</h4>
+                    <h4 style="font-size:12px; margin-bottom:5px;">📈 Thống Kê & Chi Tiết Khấu Trừ Chi Phí</h4>
                     <div id="rep-8-stats-details" style="font-size:11px;"></div>
                 </div>
             </div>
 
             <h3 style="margin-bottom:8px;">📋 Danh Sách Tất Cả Hóa Đơn</h3>
             
-            <!-- BẢNG CÓ THANH CUỘN DỌC CỐ ĐỊNH CHIỀU CAO -->
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
                             <th>Mã HD</th>
-                            <th>Ngày Hóa Đơn (Bấm Sửa)</th>
+                            <th>Ngày Hóa Đơn</th>
                             <th>Trạng Thái</th>
                             <th>Khách / QT</th>
                             <th>HDV</th>
@@ -418,7 +414,7 @@
 
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 260px; background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
-                    <h3 style="font-size:13px;">📥 Nhập Chi Phí / Mua Vật Tư Kho</h3>
+                    <h3 style="font-size:13px;" id="exp-form-title">📥 Nhập / Sửa Chi Phí Kho</h3>
                     <br>
                     <div style="margin-bottom:8px;">
                         <label style="font-size:11px; font-weight:600;">Loại Chi Phí:</label>
@@ -438,7 +434,8 @@
                         <label style="font-size:11px; font-weight:600;">Số Tiền Chi (VND):</label>
                         <input type="number" id="exp-amount" placeholder="0" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
                     </div>
-                    <button class="pay-btn" style="background: var(--accent-red); width:100%;" onclick="addExpense()">GHI SỔ CHI PHÍ KHO</button>
+                    <button class="pay-btn" id="btn-save-exp" style="background: var(--accent-red); width:100%;" onclick="addExpense()">GHI SỔ CHI PHÍ KHO</button>
+                    <button class="btn-warning" id="btn-cancel-exp" style="width:100%; margin-top:6px; display:none;" onclick="cancelEditExpense()">Hủy Sửa Chi Phí</button>
                 </div>
 
                 <div style="flex: 2; min-width: 300px;">
@@ -454,6 +451,7 @@
                                     <th>Phân Loại</th>
                                     <th>Nội Dung Chi</th>
                                     <th>Số Tiền Chi</th>
+                                    <th>Thao Tác</th>
                                 </tr>
                             </thead>
                             <tbody id="expense-table-body"></tbody>
@@ -464,7 +462,7 @@
         </div>
     </div>
 
-    <!-- TAB 4: CÀI ĐẶT & THÊM/SỬA DỊCH VỤ -->
+    <!-- TAB 4: CÀI ĐẶT -->
     <div id="settings-tab" class="tab-content">
         <div class="panel-container" style="max-width: 850px;">
             <h2>⚙️ Cài Đặt Hệ Thống, Danh Mục & Dịch Vụ</h2>
@@ -482,7 +480,7 @@
                         <input type="color" id="cfg-theme-sidebar" value="#1e293b" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
                     </div>
                     <div>
-                        <label style="font-size:11px; font-weight:600;">Màu Nền Nền Chính (Background):</label>
+                        <label style="font-size:11px; font-weight:600;">Màu Nền Chính (Background):</label>
                         <input type="color" id="cfg-theme-bg" value="#f8fafc" style="width:100%; height:35px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer;" onchange="previewTheme()">
                     </div>
                     <div>
@@ -548,8 +546,12 @@
                 </div>
             </div>
 
-            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 Cấu Hình Mã VietQR Chuyển Khoản</h3>
+            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 Cấu Hình Mã VietQR & Phí Cà Thẻ POS</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <div style="margin-bottom:8px;">
+                    <label style="font-size:11px; font-weight:600;">Phần trăm phí cà thẻ ngân hàng POS (%):</label>
+                    <input type="number" step="0.1" id="cfg-card-fee-rate" placeholder="Mặc định: 2%" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:11px; font-weight:600;">Ngân hàng:</label>
                     <select id="cfg-bank-id" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
@@ -653,6 +655,7 @@
                 window.SPA_CONFIG = docSnap.data();
                 if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = window.defaultServices;
                 if (!window.SPA_CONFIG.ADMIN_PIN) window.SPA_CONFIG.ADMIN_PIN = "1234";
+                if (window.SPA_CONFIG.CARD_FEE_RATE === undefined) window.SPA_CONFIG.CARD_FEE_RATE = 2;
                 if (!window.SPA_CONFIG.THEME) {
                     window.SPA_CONFIG.THEME = { primary: "#10b981", sidebar: "#1e293b", bg: "#f8fafc", text: "#0f172a" };
                 }
@@ -705,6 +708,7 @@
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
             USD_RATE: 25000,
+            CARD_FEE_RATE: 2,
             BANK_ID: "MB",
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
@@ -717,6 +721,7 @@
         window.cart = [];
         window.editingTxId = null;
         window.editingSvcIndex = -1;
+        window.editingExpId = null;
         window.currentCategory = "Tất cả";
         window.selectedPayment = "Tiền mặt";
         window.transactions = [];
@@ -1236,6 +1241,7 @@
             }
         };
 
+        /* BÁO CÁO TỔNG HỢP: KHẤU TRỪ TẤT CẢ CHI PHÍ TRONG NGÀY VÀ PHÍ CÀ THẺ POS */
         window.updateReportUI = function() {
             window.populateReportServiceOptions();
 
@@ -1320,13 +1326,22 @@
                 return true;
             });
             const totalExpense = filteredExpenses.reduce((s, e) => s + e.amount, 0);
-            const netProfit = totalRev - totalHdvComm - totalKtvFee - totalExpense;
+
+            // TÍNH PHÍ CÀ THẺ POS
+            const cardFeeRate = (window.SPA_CONFIG && window.SPA_CONFIG.CARD_FEE_RATE !== undefined) ? Number(window.SPA_CONFIG.CARD_FEE_RATE) : 2;
+            const totalCardFee = payCard * (cardFeeRate / 100);
+
+            // TỔNG TRỪ TẤT CẢ CHI PHÍ TRONG NGÀY
+            const totalAllExpenses = totalHdvComm + totalKtvFee + totalExpense + totalCardFee;
+            const netProfit = totalRev - totalAllExpenses;
 
             document.getElementById("rep-1-revenue").innerText = totalRev.toLocaleString() + " đ";
             document.getElementById("rep-3-discount").innerText = totalDisc.toLocaleString() + " đ";
             document.getElementById("rep-4-hdv").innerText = totalHdvComm.toLocaleString() + " đ";
             document.getElementById("rep-5-ktv").innerText = totalKtvFee.toLocaleString() + " đ";
             document.getElementById("rep-6-expense").innerText = totalExpense.toLocaleString() + " đ";
+            document.getElementById("rep-9-cardfee").innerText = totalCardFee.toLocaleString() + " đ";
+            document.getElementById("rep-10-total-expense").innerText = totalAllExpenses.toLocaleString() + " đ";
             document.getElementById("rep-7-profit").innerText = netProfit.toLocaleString() + " đ";
 
             document.getElementById("rep-2-payment-details").innerHTML = `
@@ -1336,9 +1351,16 @@
 
             const topService = Object.keys(serviceStats).sort((a,b) => serviceStats[b] - serviceStats[a])[0] || 'N/A';
             const topRoom = Object.keys(roomStats).sort((a,b) => roomStats[b] - roomStats[a])[0] || 'N/A';
+            
             document.getElementById("rep-8-stats-details").innerHTML = `
-                🔥 Dịch vụ chọn nhiều: <b>${topService}</b><br>
-                🏠 Phòng dùng nhiều nhất: <b>${topRoom}</b>
+                🔥 Dịch vụ chọn nhiều: <b>${topService}</b> | 🏠 Phòng dùng nhiều: <b>${topRoom}</b><br>
+                <hr style="margin:4px 0; border:0; border-top:1px dashed #cbd5e1;">
+                <b>📊 Chi tiết các khoản chi phí đã trừ:</b><br>
+                • Hoa hồng HDV: -${totalHdvComm.toLocaleString()} đ<br>
+                • Vé KTV ngoài: -${totalKtvFee.toLocaleString()} đ<br>
+                • Chi phí kho/vật tư: -${totalExpense.toLocaleString()} đ<br>
+                • Phí cà thẻ (${cardFeeRate}%): -${totalCardFee.toLocaleString()} đ<br>
+                🔻 <b>TỔNG TRỪ CHI PHÍ: -${totalAllExpenses.toLocaleString()} đ</b>
             `;
 
             const tbody = document.getElementById("history-table-body");
@@ -1346,7 +1368,6 @@
                 const isPending = t.status === 'Chờ thanh toán';
                 const serviceInfoStr = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join('<br>');
                 
-                // HIỂN THỊ CỘT CHI TIẾT KTV VÀ TIỀN VÉ KTV NGOÀI
                 const ktvInfoStr = t.items.map(i => {
                     const ktvNameDisplay = i.ktvName ? `<b>${i.ktvName}</b>` : '<i>Chưa chọn</i>';
                     const ktvTypeDisplay = `<span style="font-size:10px; color:#64748b;">(${i.ktvType || 'Nội bộ'})</span>`;
@@ -1396,30 +1417,73 @@
             }
         };
 
+        /* QUẢN LÝ VÀ CHỈNH SỬA CHI PHÍ KHO */
         window.addExpense = async function() {
             const category = document.getElementById("exp-category").value;
-            const name = document.getElementById("exp-name").value;
+            const name = document.getElementById("exp-name").value.trim();
             const amount = Number(document.getElementById("exp-amount").value) || 0;
 
             if (!name || amount <= 0) return alert("Vui lòng điền đủ tên vật tư và số tiền!");
 
-            const now = new Date();
-            const yyyy = now.getFullYear();
-            const mm = String(now.getMonth() + 1).padStart(2, '0');
-            const dd = String(now.getDate()).padStart(2, '0');
+            if (window.editingExpId) {
+                const exp = window.expenses.find(e => e.id === window.editingExpId);
+                if (exp) {
+                    exp.category = category;
+                    exp.name = name;
+                    exp.amount = amount;
+                    await window.saveExpenseToFirebase(exp);
+                    alert("Đã cập nhật chỉnh sửa chi phí kho thành công!");
+                }
+                window.cancelEditExpense();
+            } else {
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, '0');
+                const dd = String(now.getDate()).padStart(2, '0');
 
-            const exp = {
-                id: 'EXP' + Date.now().toString().slice(-6),
-                timestamp: Date.now(),
-                isoDate: `${yyyy}-${mm}-${dd}`,
-                time: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
-                category, name, amount
-            };
+                const exp = {
+                    id: 'EXP' + Date.now().toString().slice(-6),
+                    timestamp: Date.now(),
+                    isoDate: `${yyyy}-${mm}-${dd}`,
+                    time: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
+                    category, name, amount
+                };
 
-            await window.saveExpenseToFirebase(exp);
+                await window.saveExpenseToFirebase(exp);
+                document.getElementById("exp-name").value = "";
+                document.getElementById("exp-amount").value = "";
+                alert("Đã ghi sổ chi phí kho thành công!");
+            }
+        };
+
+        window.editExpense = function(expId) {
+            const exp = window.expenses.find(e => e.id === expId);
+            if (!exp) return;
+
+            window.editingExpId = exp.id;
+            document.getElementById("exp-form-title").innerText = "✏️ Chỉnh Sửa Chi Phí Kho";
+            document.getElementById("exp-category").value = exp.category;
+            document.getElementById("exp-name").value = exp.name;
+            document.getElementById("exp-amount").value = exp.amount;
+
+            document.getElementById("btn-save-exp").innerText = "💾 CẬP NHẬT CHI PHÍ";
+            document.getElementById("btn-cancel-exp").style.display = "block";
+        };
+
+        window.cancelEditExpense = function() {
+            window.editingExpId = null;
+            document.getElementById("exp-form-title").innerText = "📥 Nhập / Sửa Chi Phí Kho";
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
-            alert("Đã ghi sổ chi phí kho thành công!");
+            document.getElementById("btn-save-exp").innerText = "GHI SỔ CHI PHÍ KHO";
+            document.getElementById("btn-cancel-exp").style.display = "none";
+        };
+
+        window.deleteExpense = async function(expId) {
+            if (confirm("Xóa khoản chi phí kho này?")) {
+                await window.deleteExpenseFromFirebase(expId);
+                if (window.editingExpId === expId) window.cancelEditExpense();
+            }
         };
 
         window.updateExpenseUI = function() {
@@ -1445,6 +1509,10 @@
                     <td><b>${e.category}</b></td>
                     <td>${e.name}</td>
                     <td style="color:var(--accent-red); font-weight:bold;">${e.amount.toLocaleString()} đ</td>
+                    <td>
+                        <button class="btn-warning" onclick="editExpense('${e.id}')">✏️ Sửa</button>
+                        <button class="btn-danger" onclick="deleteExpense('${e.id}')">🗑️ Xóa</button>
+                    </td>
                 </tr>
             `).join('');
         };
@@ -1460,6 +1528,7 @@
             document.getElementById("cfg-spa-address").value = window.SPA_CONFIG.ADDRESS;
             document.getElementById("cfg-spa-phone").value = window.SPA_CONFIG.PHONE;
             document.getElementById("cfg-default-usd").value = window.SPA_CONFIG.USD_RATE;
+            document.getElementById("cfg-card-fee-rate").value = (window.SPA_CONFIG.CARD_FEE_RATE !== undefined) ? window.SPA_CONFIG.CARD_FEE_RATE : 2;
             document.getElementById("cfg-bank-id").value = window.SPA_CONFIG.BANK_ID || "MB";
             document.getElementById("cfg-bank-acc").value = window.SPA_CONFIG.BANK_ACC || "";
             document.getElementById("cfg-bank-name").value = window.SPA_CONFIG.BANK_NAME || "";
@@ -1595,6 +1664,7 @@
             window.SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
             window.SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
             window.SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
+            window.SPA_CONFIG.CARD_FEE_RATE = Number(document.getElementById("cfg-card-fee-rate").value) || 0;
             window.SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
             window.SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
             window.SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
