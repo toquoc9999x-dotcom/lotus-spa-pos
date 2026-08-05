@@ -341,14 +341,14 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card"><h3>1. Doanh Thu Thu Vào</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
-                <div class="stat-card" style="background:#ecfdf5; border-color:#a7f3d0;"><h3>2. Lợi Nhuận Thuần Cuối</h3><div class="val" id="rep-7-profit" style="color:var(--primary-dark);">0 đ</div></div>
+                <div class="stat-card"><h3>1. Tổng Doanh Thu</h3><div class="val" id="rep-1-revenue">0 đ</div></div>
+                <div class="stat-card" style="background:#ecfdf5; border-color:#a7f3d0;"><h3>2. Tiền Mặt Còn Cầm Lại</h3><div class="val" id="rep-7-profit" style="color:var(--primary-dark);">0 đ</div></div>
                 <div class="stat-card"><h3>3. Tổng Giảm Giá</h3><div class="val" id="rep-3-discount" style="color:var(--accent-red);">0 đ</div></div>
                 <div class="stat-card"><h3>4. Hoa Hồng HDV (30%)</h3><div class="val" id="rep-4-hdv" style="color:var(--accent-orange);">0 đ</div></div>
                 <div class="stat-card"><h3>5. Tiền Vé KTV Ngoài</h3><div class="val" id="rep-5-ktv" style="color:#7c3aed;">0 đ</div></div>
                 <div class="stat-card"><h3>6. Chi Phí Vật Tư Kho</h3><div class="val" id="rep-6-expense" style="color:var(--accent-red);">0 đ</div></div>
-                <div class="stat-card"><h3>7. Phí Cà Thẻ (POS)</h3><div class="val" id="rep-9-cardfee" style="color:var(--accent-red);">0 đ</div></div>
-                <div class="stat-card" style="background:#fff1f2; border-color:#fecdd3;"><h3>8. Tổng Tất Cả Chi Phí</h3><div class="val" id="rep-10-total-expense" style="color:#be123c;">0 đ</div></div>
+                <div class="stat-card"><h3>7. Tiền Cà Thẻ (POS)</h3><div class="val" id="rep-9-cardfee" style="color:#2563eb;">0 đ</div></div>
+                <div class="stat-card" style="background:#fff1f2; border-color:#fecdd3;"><h3>8. Tổng Chi Phí Trừ</h3><div class="val" id="rep-10-total-expense" style="color:#be123c;">0 đ</div></div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-bottom: 15px;">
@@ -417,6 +417,10 @@
                     <h3 style="font-size:13px;" id="exp-form-title">📥 Nhập / Sửa Chi Phí Kho</h3>
                     <br>
                     <div style="margin-bottom:8px;">
+                        <label style="font-size:11px; font-weight:600;">Ngày Chi Phi:</label>
+                        <input type="date" id="exp-date" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
+                    </div>
+                    <div style="margin-bottom:8px;">
                         <label style="font-size:11px; font-weight:600;">Loại Chi Phí:</label>
                         <select id="exp-category" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
                             <option value="Mua dầu">Mua dầu</option>
@@ -447,7 +451,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Thời Gian</th>
+                                    <th>Thời Gian / Ngày</th>
                                     <th>Phân Loại</th>
                                     <th>Nội Dung Chi</th>
                                     <th>Số Tiền Chi</th>
@@ -546,12 +550,8 @@
                 </div>
             </div>
 
-            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 Cấu Hình Mã VietQR & Phí Cà Thẻ POS</h3>
+            <h3 style="color:var(--accent-blue); font-size:13px; margin-bottom:10px;">📲 Cấu Hình Mã VietQR</h3>
             <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 20px;">
-                <div style="margin-bottom:8px;">
-                    <label style="font-size:11px; font-weight:600;">Phần trăm phí cà thẻ ngân hàng POS (%):</label>
-                    <input type="number" step="0.1" id="cfg-card-fee-rate" placeholder="Mặc định: 2%" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
-                </div>
                 <div style="margin-bottom:8px;">
                     <label style="font-size:11px; font-weight:600;">Ngân hàng:</label>
                     <select id="cfg-bank-id" style="width:100%; padding:6px; font-size:11px; border-radius:6px; border:1px solid var(--border-color);">
@@ -655,7 +655,6 @@
                 window.SPA_CONFIG = docSnap.data();
                 if (!window.SPA_CONFIG.SERVICES) window.SPA_CONFIG.SERVICES = window.defaultServices;
                 if (!window.SPA_CONFIG.ADMIN_PIN) window.SPA_CONFIG.ADMIN_PIN = "1234";
-                if (window.SPA_CONFIG.CARD_FEE_RATE === undefined) window.SPA_CONFIG.CARD_FEE_RATE = 2;
                 if (!window.SPA_CONFIG.THEME) {
                     window.SPA_CONFIG.THEME = { primary: "#10b981", sidebar: "#1e293b", bg: "#f8fafc", text: "#0f172a" };
                 }
@@ -708,7 +707,6 @@
             ADDRESS: "22D Cầu Mây - Sapa - Lào Cai",
             PHONE: "0856112789",
             USD_RATE: 25000,
-            CARD_FEE_RATE: 2,
             BANK_ID: "MB",
             BANK_ACC: "0856112789",
             BANK_NAME: "SEN LOTUS SPA",
@@ -785,11 +783,13 @@
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
             const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${yyyy}-${mm}-${dd}`;
             
-            document.getElementById("filter-date").value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById("filter-date").value = todayStr;
             document.getElementById("filter-month").value = `${yyyy}-${mm}`;
-            document.getElementById("exp-filter-date").value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById("exp-filter-date").value = todayStr;
             document.getElementById("exp-filter-month").value = `${yyyy}-${mm}`;
+            if (document.getElementById("exp-date")) document.getElementById("exp-date").value = todayStr;
 
             const yearSelect = document.getElementById("filter-year");
             const expYearSelect = document.getElementById("exp-filter-year");
@@ -1241,7 +1241,7 @@
             }
         };
 
-        /* BÁO CÁO TỔNG HỢP: KHẤU TRỪ TẤT CẢ CHI PHÍ TRONG NGÀY VÀ PHÍ CÀ THẺ POS */
+        /* BÁO CÁO TỔNG HỢP: TÍNH TIỀN MẶT CÒN CẦM LẠI & KHẤU TRỪ CHI PHÍ KHO/HDV/KTV (KHÔNG CÓ PHÍ CÀ THẺ) */
         window.updateReportUI = function() {
             window.populateReportServiceOptions();
 
@@ -1327,22 +1327,20 @@
             });
             const totalExpense = filteredExpenses.reduce((s, e) => s + e.amount, 0);
 
-            // TÍNH PHÍ CÀ THẺ POS
-            const cardFeeRate = (window.SPA_CONFIG && window.SPA_CONFIG.CARD_FEE_RATE !== undefined) ? Number(window.SPA_CONFIG.CARD_FEE_RATE) : 2;
-            const totalCardFee = payCard * (cardFeeRate / 100);
+            // TỔNG TẤT CẢ CHI PHÍ KHẤU TRỪ
+            const totalAllExpenses = totalHdvComm + totalKtvFee + totalExpense;
 
-            // TỔNG TRỪ TẤT CẢ CHI PHÍ TRONG NGÀY
-            const totalAllExpenses = totalHdvComm + totalKtvFee + totalExpense + totalCardFee;
-            const netProfit = totalRev - totalAllExpenses;
+            // TIỀN MẶT THỰC TẾ CÒN CẦM LẠI TRONG NGÀY
+            const cashRemaining = payCash - totalAllExpenses;
 
             document.getElementById("rep-1-revenue").innerText = totalRev.toLocaleString() + " đ";
             document.getElementById("rep-3-discount").innerText = totalDisc.toLocaleString() + " đ";
             document.getElementById("rep-4-hdv").innerText = totalHdvComm.toLocaleString() + " đ";
             document.getElementById("rep-5-ktv").innerText = totalKtvFee.toLocaleString() + " đ";
             document.getElementById("rep-6-expense").innerText = totalExpense.toLocaleString() + " đ";
-            document.getElementById("rep-9-cardfee").innerText = totalCardFee.toLocaleString() + " đ";
+            document.getElementById("rep-9-cardfee").innerText = payCard.toLocaleString() + " đ";
             document.getElementById("rep-10-total-expense").innerText = totalAllExpenses.toLocaleString() + " đ";
-            document.getElementById("rep-7-profit").innerText = netProfit.toLocaleString() + " đ";
+            document.getElementById("rep-7-profit").innerText = cashRemaining.toLocaleString() + " đ";
 
             document.getElementById("rep-2-payment-details").innerHTML = `
                 💵 Tiền mặt: <b>${payCash.toLocaleString()} đ</b> | 📱 QR: <b>${payQr.toLocaleString()} đ</b><br>
@@ -1355,12 +1353,13 @@
             document.getElementById("rep-8-stats-details").innerHTML = `
                 🔥 Dịch vụ chọn nhiều: <b>${topService}</b> | 🏠 Phòng dùng nhiều: <b>${topRoom}</b><br>
                 <hr style="margin:4px 0; border:0; border-top:1px dashed #cbd5e1;">
-                <b>📊 Chi tiết các khoản chi phí đã trừ:</b><br>
-                • Hoa hồng HDV: -${totalHdvComm.toLocaleString()} đ<br>
-                • Vé KTV ngoài: -${totalKtvFee.toLocaleString()} đ<br>
-                • Chi phí kho/vật tư: -${totalExpense.toLocaleString()} đ<br>
-                • Phí cà thẻ (${cardFeeRate}%): -${totalCardFee.toLocaleString()} đ<br>
-                🔻 <b>TỔNG TRỪ CHI PHÍ: -${totalAllExpenses.toLocaleString()} đ</b>
+                <b>📊 Tính Tiền Mặt Tồn Quỹ (Còn Cầm Lại):</b><br>
+                • Tổng tiền mặt thu vào: <b>+${payCash.toLocaleString()} đ</b><br>
+                • Trừ Tiền Cà Thẻ (POS): <b>-${payCard.toLocaleString()} đ</b> (Không nằm trong quỹ tiền mặt)<br>
+                • Trừ Hoa hồng HDV: -${totalHdvComm.toLocaleString()} đ<br>
+                • Trừ Vé KTV ngoài: -${totalKtvFee.toLocaleString()} đ<br>
+                • Trừ Chi phí kho/vật tư: -${totalExpense.toLocaleString()} đ<br>
+                🔻 <b>TIỀN MẶT CÒN CẦM LẠI: ${cashRemaining.toLocaleString()} đ</b>
             `;
 
             const tbody = document.getElementById("history-table-body");
@@ -1417,35 +1416,47 @@
             }
         };
 
-        /* QUẢN LÝ VÀ CHỈNH SỬA CHI PHÍ KHO */
+        /* QUẢN LÝ VÀ CHỈNH SỬA CHI PHÍ KHO VỚI KHẢ NĂNG SỬA CẢ NGÀY */
         window.addExpense = async function() {
             const category = document.getElementById("exp-category").value;
             const name = document.getElementById("exp-name").value.trim();
             const amount = Number(document.getElementById("exp-amount").value) || 0;
+            const expDateVal = document.getElementById("exp-date").value;
 
-            if (!name || amount <= 0) return alert("Vui lòng điền đủ tên vật tư và số tiền!");
+            if (!name || amount <= 0 || !expDateVal) return alert("Vui lòng điền đủ ngày, tên vật tư và số tiền!");
+
+            const parts = expDateVal.split('-');
+            const formattedDate = (parts.length === 3) ? `${parts[2]}/${parts[1]}/${parts[0]}` : expDateVal;
 
             if (window.editingExpId) {
                 const exp = window.expenses.find(e => e.id === window.editingExpId);
                 if (exp) {
+                    const timePart = exp.time ? (exp.time.split(' ')[1] || '00:00') : '00:00';
                     exp.category = category;
                     exp.name = name;
                     exp.amount = amount;
+                    exp.isoDate = expDateVal;
+                    exp.time = `${formattedDate} ${timePart}`;
+
+                    const timeParts = timePart.split(':');
+                    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), Number(timeParts[0]||0), Number(timeParts[1]||0));
+                    exp.timestamp = d.getTime();
+
                     await window.saveExpenseToFirebase(exp);
                     alert("Đã cập nhật chỉnh sửa chi phí kho thành công!");
                 }
                 window.cancelEditExpense();
             } else {
                 const now = new Date();
-                const yyyy = now.getFullYear();
-                const mm = String(now.getMonth() + 1).padStart(2, '0');
-                const dd = String(now.getDate()).padStart(2, '0');
+                const timePart = now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+
+                const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), now.getHours(), now.getMinutes());
 
                 const exp = {
                     id: 'EXP' + Date.now().toString().slice(-6),
-                    timestamp: Date.now(),
-                    isoDate: `${yyyy}-${mm}-${dd}`,
-                    time: `${dd}/${mm}/${yyyy} ${now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'})}`,
+                    timestamp: d.getTime(),
+                    isoDate: expDateVal,
+                    time: `${formattedDate} ${timePart}`,
                     category, name, amount
                 };
 
@@ -1462,6 +1473,7 @@
 
             window.editingExpId = exp.id;
             document.getElementById("exp-form-title").innerText = "✏️ Chỉnh Sửa Chi Phí Kho";
+            document.getElementById("exp-date").value = exp.isoDate || "";
             document.getElementById("exp-category").value = exp.category;
             document.getElementById("exp-name").value = exp.name;
             document.getElementById("exp-amount").value = exp.amount;
@@ -1470,11 +1482,38 @@
             document.getElementById("btn-cancel-exp").style.display = "block";
         };
 
+        window.quickUpdateExpDate = async function(expId, newIsoDate) {
+            if (!newIsoDate) return;
+            const exp = window.expenses.find(e => e.id === expId);
+            if (exp) {
+                const parts = newIsoDate.split('-');
+                if (parts.length === 3) {
+                    const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    const timePart = exp.time ? (exp.time.split(' ')[1] || '00:00') : '00:00';
+                    exp.isoDate = newIsoDate;
+                    exp.time = `${formattedDate} ${timePart}`;
+
+                    const timeParts = timePart.split(':');
+                    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]), Number(timeParts[0]||0), Number(timeParts[1]||0));
+                    exp.timestamp = d.getTime();
+
+                    await window.saveExpenseToFirebase(exp);
+                }
+            }
+        };
+
         window.cancelEditExpense = function() {
             window.editingExpId = null;
             document.getElementById("exp-form-title").innerText = "📥 Nhập / Sửa Chi Phí Kho";
             document.getElementById("exp-name").value = "";
             document.getElementById("exp-amount").value = "";
+            
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById("exp-date").value = `${yyyy}-${mm}-${dd}`;
+
             document.getElementById("btn-save-exp").innerText = "GHI SỔ CHI PHÍ KHO";
             document.getElementById("btn-cancel-exp").style.display = "none";
         };
@@ -1505,7 +1544,10 @@
             const tbody = document.getElementById("expense-table-body");
             tbody.innerHTML = filtered.map(e => `
                 <tr>
-                    <td>${e.time}</td>
+                    <td>
+                        <input type="date" class="input-inline" value="${e.isoDate || ''}" onchange="quickUpdateExpDate('${e.id}', this.value)" style="font-weight:600; font-size:11px; padding:2px 4px;">
+                        <div style="font-size:10px; color:#64748b; margin-top:2px;">🕒 ${e.time ? (e.time.split(' ')[1] || '') : ''}</div>
+                    </td>
                     <td><b>${e.category}</b></td>
                     <td>${e.name}</td>
                     <td style="color:var(--accent-red); font-weight:bold;">${e.amount.toLocaleString()} đ</td>
@@ -1528,7 +1570,6 @@
             document.getElementById("cfg-spa-address").value = window.SPA_CONFIG.ADDRESS;
             document.getElementById("cfg-spa-phone").value = window.SPA_CONFIG.PHONE;
             document.getElementById("cfg-default-usd").value = window.SPA_CONFIG.USD_RATE;
-            document.getElementById("cfg-card-fee-rate").value = (window.SPA_CONFIG.CARD_FEE_RATE !== undefined) ? window.SPA_CONFIG.CARD_FEE_RATE : 2;
             document.getElementById("cfg-bank-id").value = window.SPA_CONFIG.BANK_ID || "MB";
             document.getElementById("cfg-bank-acc").value = window.SPA_CONFIG.BANK_ACC || "";
             document.getElementById("cfg-bank-name").value = window.SPA_CONFIG.BANK_NAME || "";
@@ -1664,7 +1705,6 @@
             window.SPA_CONFIG.ADDRESS = document.getElementById("cfg-spa-address").value;
             window.SPA_CONFIG.PHONE = document.getElementById("cfg-spa-phone").value;
             window.SPA_CONFIG.USD_RATE = Number(document.getElementById("cfg-default-usd").value) || 25000;
-            window.SPA_CONFIG.CARD_FEE_RATE = Number(document.getElementById("cfg-card-fee-rate").value) || 0;
             window.SPA_CONFIG.BANK_ID = document.getElementById("cfg-bank-id").value;
             window.SPA_CONFIG.BANK_ACC = document.getElementById("cfg-bank-acc").value.trim();
             window.SPA_CONFIG.BANK_NAME = document.getElementById("cfg-bank-name").value.trim();
@@ -1731,23 +1771,20 @@
 
         window.exportReportExcel = function() {
             if (window.filteredCache.length === 0) return alert("Không có dữ liệu!");
-            let csv = "\uFEFFMã HD,Trạng Thái,Thời Gian,Khách Hàng,Quốc Tịch,HDV,Phòng,Dịch Vụ & Giờ Làm,KTV & Trả Vé,Hình Thức TT,Giảm Giá,Thành Tiền VND\n";
+            let csv = "\uFEFFMã HD,Ngày,Khách hàng,Quốc tịch,HDV,Phòng,Hình thức TT,Thành tiền (VND)\n";
             window.filteredCache.forEach(t => {
-                const svcs = t.items.map(i => `${i.name} (x${i.qty || 1}) ${i.startTime ? '['+i.startTime+'-'+i.endTime+']' : ''}`).join(' | ');
-                const ktvs = t.items.map(i => `${i.ktvName || 'Chưa chọn'} (${i.ktvType || 'Nội bộ'}${i.ktvType === 'KTV Ngoài' ? ' - Vé: ' + Number(i.ktvExtFee||0).toLocaleString() + 'đ' : ''})`).join(' | ');
-                csv += `"${t.id}","${t.status}","${t.createdTime}","${t.customer}","${t.nation}","${t.hdv}","${t.room}","${svcs}","${ktvs}","${t.paymentMethod}","${t.discount}","${t.totalVnd}"\n`;
+                csv += `"${t.id}","${t.createdTime || t.isoDate}","${t.customer}","${t.nation}","${t.hdv || ''}","${t.room}","${t.paymentMethod}",${t.totalVnd}\n`;
             });
-
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `Bao_Cao_Spa_${Date.now()}.csv`);
-            document.body.appendChild(link);
+            link.download = `Bao_Cao_Doanh_Thu_${new Date().toISOString().slice(0,10)}.csv`;
             link.click();
-            document.body.removeChild(link);
         };
 
-        window.init();
+        window.onload = function() {
+            window.init();
+        };
     </script>
 </body>
 </html>
