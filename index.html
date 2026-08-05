@@ -360,6 +360,11 @@
                     <h4 style="font-size:12px; margin-bottom:5px;">📈 Thống Kê & Chi Tiết Khấu Trừ Chi Phí</h4>
                     <div id="rep-8-stats-details" style="font-size:11px;"></div>
                 </div>
+                <!-- PHẦN THỐNG KÊ DỊCH VỤ VÀ THỜI LƯỢNG MỚI BỔ SUNG -->
+                <div style="background:var(--bg-main); padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                    <h4 style="font-size:12px; margin-bottom:5px; color:var(--primary-dark);">⏱️ Thống Kê Dịch Vụ Theo Thời Lượng</h4>
+                    <div id="rep-duration-stats-details" style="font-size:11px;"></div>
+                </div>
             </div>
 
             <h3 style="margin-bottom:8px;">📋 Danh Sách Tất Cả Hóa Đơn</h3>
@@ -1241,7 +1246,7 @@
             }
         };
 
-        /* BÁO CÁO TỔNG HỢP: TÍNH TIỀN MẶT CÒN CẦM LẠI & KHẤU TRỪ CHI PHÍ KHO/HDV/KTV (KHÔNG CÓ PHÍ CÀ THẺ) */
+        /* BÁO CÁO TỔNG HỢP & THỐNG KÊ CHI TIẾT THEO THỜI LƯỢNG DỊCH VỤ */
         window.updateReportUI = function() {
             window.populateReportServiceOptions();
 
@@ -1298,6 +1303,10 @@
             let payCash = 0, payQr = 0, payBank = 0, payCard = 0;
             let serviceStats = {}, roomStats = {};
 
+            // Biến thống kê thời lượng dịch vụ
+            let totalServiceCount = 0;
+            let durationCounts = { 30: 0, 45: 0, 60: 0, 75: 0, 90: 0, 120: 0, other: 0 };
+
             window.filteredCache.forEach(t => {
                 if (t.status === 'Hoàn thành') {
                     totalRev += t.totalVnd;
@@ -1312,9 +1321,23 @@
                 }
 
                 roomStats[t.room] = (roomStats[t.room] || 0) + 1;
-                t.items.forEach(i => { 
+                
+                (t.items || []).forEach(i => { 
                     if (serviceFilter === 'all' || i.name === serviceFilter) {
-                        serviceStats[i.name] = (serviceStats[i.name] || 0) + (i.qty || 1); 
+                        const qty = Number(i.qty || 1);
+                        const dur = Number(i.duration);
+
+                        serviceStats[i.name] = (serviceStats[i.name] || 0) + qty; 
+
+                        // Chỉ tính vào thống kê lượt làm khi hóa đơn đã hoàn thành (hoặc theo bộ lọc trạng thái)
+                        if (statusFilter === 'all' || t.status === statusFilter) {
+                            totalServiceCount += qty;
+                            if ([30, 45, 60, 75, 90, 120].includes(dur)) {
+                                durationCounts[dur] += qty;
+                            } else {
+                                durationCounts.other += qty;
+                            }
+                        }
                     }
                 });
             });
@@ -1360,6 +1383,16 @@
                 • Trừ Vé KTV ngoài: -${totalKtvFee.toLocaleString()} đ<br>
                 • Trừ Chi phí kho/vật tư: -${totalExpense.toLocaleString()} đ<br>
                 🔻 <b>TIỀN MẶT CÒN CẦM LẠI: ${cashRemaining.toLocaleString()} đ</b>
+            `;
+
+            // CẬP NHẬT GIAO DIỆN THỐNG KÊ THỜI LƯỢNG DỊCH VỤ
+            document.getElementById("rep-duration-stats-details").innerHTML = `
+                • Tổng số lượt dịch vụ: <b style="color:var(--primary-dark); font-size:12px;">${totalServiceCount} lượt</b><br>
+                <hr style="margin:4px 0; border:0; border-top:1px dashed #cbd5e1;">
+                • ⏱️ <b>30 phút:</b> <b style="color:#2563eb;">${durationCounts[30]}</b> lượt &nbsp;|&nbsp; ⏱️ <b>45 phút:</b> <b style="color:#2563eb;">${durationCounts[45]}</b> lượt<br>
+                • ⏱️ <b>60 phút:</b> <b style="color:#2563eb;">${durationCounts[60]}</b> lượt &nbsp;|&nbsp; ⏱️ <b>75 phút:</b> <b style="color:#2563eb;">${durationCounts[75]}</b> lượt<br>
+                • ⏱️ <b>90 phút:</b> <b style="color:#2563eb;">${durationCounts[90]}</b> lượt &nbsp;|&nbsp; ⏱️ <b>120 phút:</b> <b style="color:#2563eb;">${durationCounts[120]}</b> lượt
+                ${durationCounts.other > 0 ? `<br>• ⏱️ <b>Thời lượng khác:</b> <b style="color:#2563eb;">${durationCounts.other}</b> lượt` : ''}
             `;
 
             const tbody = document.getElementById("history-table-body");
